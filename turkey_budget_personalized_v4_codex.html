@@ -1,0 +1,1751 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+:root{
+  --font-sans: "Inter", "Segoe UI", sans-serif;
+  --border-radius-md: 12px;
+  --border-radius-lg: 18px;
+}
+body[data-theme="dark"]{
+  --color-background-primary:#141b23;
+  --color-background-secondary:#1b2430;
+  --color-background-success:rgba(116,193,121,0.14);
+  --color-background-warning:rgba(228,178,73,0.14);
+  --color-background-danger:rgba(224,106,106,0.14);
+  --color-background-info:rgba(86,156,214,0.14);
+  --color-border-secondary:rgba(196,208,224,0.12);
+  --color-border-tertiary:rgba(196,208,224,0.08);
+  --color-text-primary:#eef4fb;
+  --color-text-secondary:#c2cedb;
+  --color-text-tertiary:#93a4b7;
+  --color-text-success:#86d98d;
+  --color-text-warning:#f0c366;
+  --color-text-danger:#f18b8b;
+  --color-text-info:#7eb7ee;
+}
+body[data-theme="light"]{
+  --color-background-primary:#fbfcfe;
+  --color-background-secondary:#eef3f8;
+  --color-background-success:rgba(67,146,74,0.12);
+  --color-background-warning:rgba(190,126,18,0.12);
+  --color-background-danger:rgba(194,74,74,0.12);
+  --color-background-info:rgba(37,103,167,0.12);
+  --color-border-secondary:rgba(33,55,82,0.14);
+  --color-border-tertiary:rgba(33,55,82,0.1);
+  --color-text-primary:#172331;
+  --color-text-secondary:#42576f;
+  --color-text-tertiary:#687d93;
+  --color-text-success:#2e7d32;
+  --color-text-warning:#a86b00;
+  --color-text-danger:#b23b3b;
+  --color-text-info:#1f5f97;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-sans);background:radial-gradient(circle at top, rgba(86,156,214,0.09), transparent 30%),linear-gradient(180deg,#0f141b 0%, #141b23 100%);color:var(--color-text-primary);padding:1rem 0 3rem;transition:background .25s ease,color .25s ease;}
+.tabs{display:flex;gap:2px;border:0.5px solid var(--color-border-tertiary);margin-bottom:1.5rem;flex-wrap:wrap;position:sticky;top:0;z-index:20;background:rgba(20,27,35,0.88);backdrop-filter:blur(16px);padding:8px 10px;border-radius:18px;}
+.tab{padding:8px 14px;font-size:13px;cursor:pointer;border:none;background:transparent;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-1px;}
+.tab.active{color:var(--color-text-primary);border-bottom-color:var(--color-text-primary);font-weight:500;}
+.pane{display:none;}.pane.active{display:block;}
+.cards4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.4rem;}
+.cards3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1.4rem;}
+.cards2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.4rem;}
+.cards5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:1.4rem;}
+.mcard{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;}
+.mlbl{font-size:11px;color:var(--color-text-secondary);margin-bottom:3px;}
+.mval{font-size:18px;font-weight:500;color:var(--color-text-primary);}
+.mval.g{color:var(--color-text-success);}.mval.r{color:var(--color-text-danger);}.mval.a{color:var(--color-text-warning);}
+.msub{font-size:11px;color:var(--color-text-tertiary);margin-top:2px;}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px 18px;margin-bottom:12px;}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+h3{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:12px;}
+.slbl{font-size:11px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:.07em;text-transform:uppercase;margin:1rem 0 8px;}
+.field{margin-bottom:9px;}
+.field label{display:block;font-size:12px;color:var(--color-text-secondary);margin-bottom:3px;}
+.field input[type=number]{width:100%;padding:5px 9px;font-size:13px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);}
+.rrow{display:flex;align-items:center;gap:8px;}
+.rrow input[type=range]{flex:1;}
+.rrow input[type=number],.rrow input[type=text]{width:120px;padding:5px 9px;font-size:13px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);}
+.rval{font-size:12px;font-weight:500;color:var(--color-text-primary);min-width:90px;text-align:right;white-space:nowrap;}
+.input-warn{font-size:10px;color:var(--color-text-warning);margin-top:4px;display:none;}
+.cat-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 0;cursor:pointer;border-bottom:0.5px solid var(--color-border-tertiary);}
+.cat-hdr:first-child{border-top:0.5px solid var(--color-border-tertiary);}
+.cat-name{font-size:13px;font-weight:500;color:var(--color-text-primary);}
+.cat-body{padding:8px 0 4px;}
+.sub-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+.sub-nm{font-size:12px;color:var(--color-text-secondary);min-width:155px;}
+.sub-val{font-size:12px;font-weight:500;color:var(--color-text-primary);min-width:75px;text-align:right;white-space:nowrap;}
+.res-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;border-bottom:0.5px solid var(--color-border-tertiary);}
+.res-row:last-child{border-bottom:none;}
+.res-lbl{color:var(--color-text-secondary);}
+.res-val{font-weight:500;}
+.pbar-w{margin:8px 0 4px;}
+.pbar-top{display:flex;justify-content:space-between;font-size:11px;color:var(--color-text-tertiary);margin-bottom:3px;}
+.pbar{height:5px;border-radius:3px;background:var(--color-border-tertiary);overflow:hidden;}
+.pfill{height:100%;border-radius:3px;transition:width .3s;}
+.afford{padding:12px 14px;border-radius:var(--border-radius-md);margin-bottom:10px;font-size:13px;}
+.afford.ok{background:var(--color-background-success);color:var(--color-text-success);}
+.afford.warn{background:var(--color-background-warning);color:var(--color-text-warning);}
+.afford.bad{background:var(--color-background-danger);color:var(--color-text-danger);}
+.afford-t{font-weight:500;font-size:14px;margin-bottom:4px;}
+.ibox{background:var(--color-background-info);color:var(--color-text-info);border-radius:var(--border-radius-md);padding:10px 14px;font-size:13px;margin-top:8px;}
+.ibox b{font-weight:500;}
+.warn-box{background:var(--color-background-warning);color:var(--color-text-warning);border-radius:var(--border-radius-md);padding:10px 14px;font-size:13px;margin-bottom:10px;}
+.warn-box b{font-weight:500;}
+.tabs-spacer{flex:1;}
+.top-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.theme-btn{width:38px;height:38px;border:0.5px solid var(--color-border-secondary);border-radius:999px;background:var(--color-background-primary);color:var(--color-text-primary);font-size:16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
+.lang-select{padding:8px 12px;border:0.5px solid var(--color-border-secondary);border-radius:999px;background:var(--color-background-primary);color:var(--color-text-primary);font-size:12px;cursor:pointer;}
+.hero{padding:22px 24px;border:0.5px solid var(--color-border-tertiary);border-radius:24px;background:linear-gradient(135deg, rgba(86,156,214,0.14), rgba(29,158,117,0.08) 55%, rgba(224,178,73,0.08));margin-bottom:14px;}
+.hero h1{font-size:28px;line-height:1.15;margin-bottom:10px;}
+.hero p{font-size:14px;color:var(--color-text-secondary);line-height:1.7;max-width:980px;}
+.section-grid{display:grid;grid-template-columns:1.2fr 0.8fr;gap:14px;margin-bottom:14px;}
+.welcome-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+.welcome-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:18px;padding:16px;}
+.welcome-card.clickable{cursor:pointer;transition:transform .18s ease,border-color .18s ease;}
+.welcome-card.clickable:hover{transform:translateY(-2px);border-color:var(--color-text-info);}
+.welcome-card h4{font-size:13px;margin-bottom:6px;}
+.welcome-card p{font-size:12px;color:var(--color-text-secondary);line-height:1.55;}
+.helper{font-size:11px;color:var(--color-text-tertiary);line-height:1.5;margin-top:5px;}
+.credit-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px;}
+.mini-note{font-size:11px;color:var(--color-text-secondary);line-height:1.5;padding:9px 10px;border-radius:12px;background:var(--color-background-secondary);}
+.loan-src{font-size:11px;color:var(--color-text-info);margin-top:6px;line-height:1.45;}
+.loan-actions{display:flex;align-items:center;gap:8px;justify-content:flex-end;margin-top:6px;flex-wrap:wrap;}
+.sub-btn{padding:7px 10px;border:none;border-radius:10px;background:var(--color-background-info);color:var(--color-text-info);font-size:11px;font-weight:600;cursor:pointer;}
+.danger-btn{padding:7px 10px;border:none;border-radius:10px;background:var(--color-background-danger);color:var(--color-text-danger);font-size:11px;font-weight:600;cursor:pointer;}
+.budget-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(320px,0.8fr);gap:14px;}
+.stack{display:flex;flex-direction:column;gap:12px;}
+.chart-switch{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 12px;}
+.switch-btn{padding:7px 10px;border:0.5px solid var(--color-border-secondary);border-radius:999px;background:transparent;color:var(--color-text-secondary);font-size:11px;cursor:pointer;}
+.switch-btn.active{background:var(--color-background-info);color:var(--color-text-info);border-color:transparent;}
+.report-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+.report-tall{height:280px;}
+.report-wide{grid-column:1 / -1;}
+.template-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px;}
+.inline-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;}
+.add-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 0 4px;}
+.add-row input[type=text]{flex:1;min-width:180px;padding:5px 9px;font-size:13px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);}
+.status-box{padding:12px 14px;border-radius:14px;background:var(--color-background-secondary);font-size:12px;color:var(--color-text-secondary);line-height:1.6;}
+.status-box strong{color:var(--color-text-primary);}
+.report-explainer{font-size:12px;color:var(--color-text-secondary);line-height:1.65;background:var(--color-background-secondary);padding:12px 14px;border-radius:14px;}
+body[data-theme="light"] .switch-btn.active{border-color:transparent;}
+body[data-theme="light"] .tabs{background:rgba(251,252,254,0.96);border-color:rgba(33,55,82,0.14);box-shadow:0 8px 24px rgba(35,56,82,0.08);}
+body[data-theme="light"]{background:radial-gradient(circle at top, rgba(37,103,167,0.1), transparent 30%),linear-gradient(180deg,#f4f8fc 0%, #eef3f8 100%);}
+@media (max-width:1100px){.budget-layout,.report-grid,.template-grid{grid-template-columns:1fr;}}
+@media (max-width:900px){.api-grid,.section-grid,.welcome-list,.credit-summary,.cards5{grid-template-columns:1fr;}.rrow{flex-wrap:wrap;}.rrow input[type=number],.rrow input[type=text]{width:100%;}}
+.tip{font-size:12px;color:var(--color-text-secondary);padding:8px 10px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-bottom:8px;line-height:1.5;}
+.tip b{font-weight:500;color:var(--color-text-primary);}
+.chart-wrap{position:relative;height:220px;}
+.chart-wrap.tall{height:260px;}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:12px;color:var(--color-text-secondary);}
+.legend span{display:flex;align-items:center;gap:4px;}
+.dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;}
+.badge.ok{background:var(--color-background-success);color:var(--color-text-success);}
+.badge.warn{background:var(--color-background-warning);color:var(--color-text-warning);}
+.badge.bad{background:var(--color-background-danger);color:var(--color-text-danger);}
+.split-bar{display:flex;height:28px;border-radius:var(--border-radius-md);overflow:hidden;margin:8px 0;}
+.split-try{background:#185FA5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:white;transition:width .3s;}
+.split-usd{background:#1D9E75;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:white;transition:width .3s;}
+.risk-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px;}
+.risk-item:last-child{border-bottom:none;}
+.scenario-hl{border-radius:var(--border-radius-md);padding:14px;margin-bottom:10px;}
+.sc-main{background:rgba(226,75,74,0.1);border:1px solid rgba(226,75,74,0.3);color:var(--color-text-danger);}
+.sc-opt{background:rgba(99,153,34,0.1);border:1px solid rgba(99,153,34,0.25);color:var(--color-text-success);}
+.sc-mid{background:rgba(55,138,221,0.1);border:1px solid rgba(55,138,221,0.25);color:var(--color-text-info);}
+.sc-title{font-weight:500;font-size:13px;margin-bottom:3px;}
+.sc-rate{font-size:24px;font-weight:500;}
+.sc-desc{font-size:11px;margin-top:4px;opacity:.85;}
+.unlock-box{background:linear-gradient(135deg,rgba(99,153,34,0.08),rgba(29,158,117,0.08));border:0.5px solid rgba(99,153,34,0.3);border-radius:var(--border-radius-lg);padding:16px 18px;margin-bottom:12px;}
+.action-btn{padding:9px 14px;border:none;border-radius:var(--border-radius-md);background:#185FA5;color:#fff;font-size:13px;font-weight:500;cursor:pointer;}
+.action-btn:disabled{opacity:.6;cursor:wait;}
+.api-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.api-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;min-height:170px;}
+.api-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;}
+.api-title{font-size:13px;font-weight:500;color:var(--color-text-primary);}
+.api-sub{font-size:11px;color:var(--color-text-tertiary);margin-top:2px;}
+.loan-list{display:flex;flex-direction:column;gap:8px;}
+.loan-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:0.5px solid var(--color-border-tertiary);}
+.loan-row:last-child{border-bottom:none;padding-bottom:0;}
+.loan-tier{display:inline-flex;align-items:center;justify-content:center;min-width:70px;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+.loan-tier.great{background:rgba(99,153,34,0.16);color:#3B6D11;}
+.loan-tier.good{background:rgba(29,158,117,0.14);color:#0F6E56;}
+.loan-tier.mid{background:rgba(239,159,39,0.14);color:#BA7517;}
+.loan-tier.poor{background:rgba(216,90,48,0.14);color:#D85A30;}
+.loan-tier.bad{background:rgba(226,75,74,0.14);color:#B53A39;}
+.loan-bank{font-size:12px;font-weight:500;color:var(--color-text-primary);}
+.loan-product{font-size:11px;color:var(--color-text-secondary);margin-top:2px;line-height:1.4;}
+.loan-meta{font-size:11px;color:var(--color-text-tertiary);text-align:right;line-height:1.5;}
+.api-note{font-size:11px;color:var(--color-text-tertiary);margin-top:8px;line-height:1.45;}
+@media (max-width:900px){.api-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('welcome')">👋 Başlangıç</button>
+  <button class="tab" onclick="showTab('budget')">💰 Bütçe</button>
+  <button class="tab" onclick="showTab('reports')">📊 Raporlar</button>
+  <button class="tab" onclick="showTab('currency')">💱 Kur Stratejisi</button>
+  <button class="tab" onclick="showTab('inflation')">📈 Enflasyon Tarihi</button>
+  <button class="tab" onclick="showTab('projection')">🔮 Gelecek</button>
+  <button class="tab" onclick="showTab('mortgage')">🏠 Kredi Opt.</button>
+  <button class="tab" onclick="showTab('risk')">🛡 Risk Analizi</button>
+  <div class="tabs-spacer"></div>
+  <div class="top-controls">
+    <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()" aria-label="Theme toggle">☀</button>
+    <select class="lang-select" id="lang-select" onchange="changeLanguage(this.value)" aria-label="Language selector">
+      <option value="tr">TR</option>
+      <option value="en">EN</option>
+    </select>
+  </div>
+</div>
+
+<div id="pane-welcome" class="pane active">
+  <div class="hero">
+    <h1>Turkiye'de ev, araba ve aylik hayat masraflarini tek tabloda planlayin.</h1>
+    <p>Bu sayfa USD geliriniz, TRY giderleriniz, konut krediniz, arac finansmaniniz ve kur senaryolarinizi birbirine baglar. En iyi sonuc icin kendi gelir, kredi, pesinat ve aylik harcama bilgilerinizi girin; kredi karsilastirma bolumunde ise CollectAPI'den gelen teklifleri secerek aylik taksitleri dogrudan ana butceye tasiyin.</p>
+  </div>
+
+  <div class="section-grid">
+    <div class="card">
+      <h3>Sayfa nasil kullanilir?</h3>
+      <div class="welcome-list">
+        <div class="welcome-card"><h4>1. Geliri girin</h4><p>Butce sekmesinde sizin USD geliriniz, varsa es geliri ve ek TRY gelirleri yer alir. Bu alanlar tum oran ve risk hesaplarinin temelidir.</p></div>
+        <div class="welcome-card"><h4>2. Ev ve araci tanimlayin</h4><p>Konut ve arac kartlarinda fiyat, pesinat, vade ve faiz bilgilerini girin. Bu aylik taksitler toplam giderinize otomatik eklenir.</p></div>
+        <div class="welcome-card"><h4>3. Giderleri gercege yakin yapin</h4><p>Detayli giderler bolumunde market, ulasim, saglik ve diger kalemleri kendi hayat duzeninize gore ayarlayin.</p></div>
+        <div class="welcome-card"><h4>4. API teklifini secin</h4><p>CollectAPI sekmesinde size uygun ev veya tasit kredisini secerseniz, faiz ve aylik odeme ana butceye yazilir. Boylece tablo gercek banka teklifiyle guncellenir.</p></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Bu uyari ne anlama geliyor?</h3>
+      <div class="warn-box">
+        <b>⚠ Tek gelirli USD hane — yüksek kur riski profili.</b> Tüm analizler bu profile göre ayarlandı. Kötümser TRY/USD senaryosu öncelikli görünüm olarak işaretlendi.
+      </div>
+      <div class="tip"><b>Aciklama:</b> Bu uyari, hanenin ana nakit akisinin tek kisiye bagli oldugunu varsayar. Kur yukseldiginde geliriniz TRY bazinda artar; ama gelir kesintisi, is degisimi veya beklenmedik buyuk giderler durumunda ikinci bir gelir tampondan yoksun kalirsiniz.</div>
+      <div class="mini-note">Bu nedenle uygulama; kredi/gelir oranlarini daha tutucu yorumlar, 9-12 aylik acil fonu onerir ve risk analizinde "tek gelir" senaryosunu merkeze alir.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Hangi sekme ne yapar?</h3>
+    <div class="welcome-list">
+      <div class="welcome-card clickable" onclick="showTab('budget')"><h4>Butce</h4><p>Ana veri giris ekrani. Gelir, konut, arac ve tum aylik yasam giderleri burada baglanir.</p></div>
+      <div class="welcome-card clickable" onclick="showTab('currency')"><h4>Kur Stratejisi</h4><p>Ne kadar USD bozdurmaniz gerektigini ve acil fon ihtiyacinizi hesaplar.</p></div>
+      <div class="welcome-card clickable" onclick="showTab('inflation')"><h4>Enflasyon Tarihi</h4><p>Gecmis enflasyon ve USD/TRY hareketlerini gosterir; bugunku tablonuzu tarihsel baglama oturtur.</p></div>
+      <div class="welcome-card clickable" onclick="showTab('projection')"><h4>Gelecek</h4><p>Kur senaryolari altinda gelirinizin, giderinizin ve kredi maliyetinizin nasil degisecegini gosterir.</p></div>
+      <div class="welcome-card clickable" onclick="showTab('mortgage')"><h4>Kredi Opt.</h4><p>Konut ve tasit tekliflerini canli cekip secmenizi saglar. Sectiginiz teklifler ana sayfaya import edilir.</p></div>
+      <div class="welcome-card clickable" onclick="showTab('risk')"><h4>Risk Analizi</h4><p>Gelir kesintisi, kur dususu ve beklenmedik giderler altinda butcenizin ne kadar dayanikli oldugunu olcer.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Hizli kurulum soru listesi</h3>
+    <div class="tip"><b>Kimler icin?</b> Bu bolum, araci ilk kez kullanan kisiler icin hizli bir baslangic taslagi uretir. Varsayilan degerlerinizi degistirmez; sadece alttaki butona basilirsa secilen taslak uygulanir.</div>
+    <div class="template-grid">
+      <div class="field"><label>Aylik USD gelir</label><input type="number" id="tpl-usd1" value="2500" step="100"></div>
+      <div class="field"><label>Es / ikinci gelir (USD)</label><input type="number" id="tpl-usd2" value="0" step="100"></div>
+      <div class="field"><label>Konut plani</label><select id="tpl-home" style="width:100%;padding:8px 9px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);"><option value="mortgage">Ev almak istiyor</option><option value="cash">Pesin / kredissiz</option><option value="later">Daha sonra bakacak</option></select></div>
+      <div class="field"><label>Arac plani</label><select id="tpl-car" style="width:100%;padding:8px 9px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);"><option value="loan">Arac kredisi dusunuyor</option><option value="cash">Araci pesin alacak</option><option value="none">Arac yok</option></select></div>
+      <div class="field"><label>Harcama stili</label><select id="tpl-style" style="width:100%;padding:8px 9px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);"><option value="lean">Temkinli</option><option value="balanced" selected>Dengeli</option><option value="comfortable">Rahat</option></select></div>
+      <div class="field"><label>Hane tipi</label><select id="tpl-household" style="width:100%;padding:8px 9px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);"><option value="single">Tek kisi</option><option value="couple" selected>Cift</option><option value="family">Kucuk aile</option></select></div>
+    </div>
+    <div class="inline-actions">
+      <button class="action-btn" onclick="applyWelcomeTemplate()">Taslagi uygula</button>
+      <div class="helper" id="tpl-status">Bu taslak istege baglidir. Baslangic noktasi uretir, sonra tum alanlar tek tek duzenlenebilir.</div>
+    </div>
+  </div>
+</div>
+
+<!-- BUDGET TAB -->
+<div id="pane-budget" class="pane">
+  <div class="cards4">
+    <div class="mcard"><div class="mlbl">Aylık TRY geliri</div><div class="mval" id="c-inc">₺0</div><div class="msub" id="c-usd-sub">$2,500 / ay</div></div>
+    <div class="mcard"><div class="mlbl">Toplam gider</div><div class="mval r" id="c-exp">₺0</div></div>
+    <div class="mcard"><div class="mlbl">Net bakiye</div><div class="mval" id="c-bal">₺0</div><div class="msub" id="c-bal-usd"></div></div>
+    <div class="mcard"><div class="mlbl">Tasarruf oranı</div><div class="mval" id="c-sav">0%</div><div class="msub">Hedef: min %20</div></div>
+  </div>
+
+  <div class="budget-layout">
+    <div class="stack">
+      <div class="card">
+        <h3>Gelir</h3>
+        <div class="field"><label>USD geliri (sizin)</label><input type="number" id="usd1" value="2500" step="100" oninput="calc()"></div>
+        <div class="field"><label>Eşin geliri — şu an (USD)</label><input type="number" id="usd2" value="0" step="100" oninput="calc()"></div>
+        <div class="field"><label>Eşin planlanan geliri (USD) 🔓</label><input type="number" id="usd2fut" value="0" step="100" oninput="calc()"></div>
+        <div class="field"><label>Ek TRY geliri (kira vb.)</label><input type="number" id="try-ext" value="0" step="500" oninput="calc()"></div>
+        <div class="field">
+          <label>USD/TRY anlık kur</label>
+          <div class="rrow"><input type="range" id="fx" min="38" max="70" step="0.5" value="43.5" oninput="handleRangeInput('fx', this.value, fxChange)"><input type="number" id="fxN" min="38" max="70" step="0.5" value="43.5" oninput="handleNumberInput('fx', this.value, fxChange)"><span class="rval" id="fxV">43.50</span></div>
+          <div class="input-warn" id="fxW">38 ile 70 arasında, 0.5 artışlarla girin.</div>
+        </div>
+        <div class="ibox" id="inc-breakdown"></div>
+      </div>
+
+      <div class="card">
+        <h3>Konut Kredisi</h3>
+        <div class="field"><label>Ev fiyatı (₺)</label><input type="number" id="hp" value="5000000" step="100000" oninput="calcMort()"></div>
+        <div class="field"><label>Peşinat (₺)</label><input type="number" id="dp" value="1500000" step="100000" oninput="calcMort()"></div>
+        <div class="field"><label>Aylık faiz (%)</label>
+          <div class="rrow"><input type="range" id="mr" min="1.5" max="5" step="0.1" value="3.0" oninput="handleRangeInput('mr', this.value, calcMort, 1, '%')"><input type="number" id="mrN" min="1.5" max="5" step="0.1" value="3.0" oninput="handleNumberInput('mr', this.value, calcMort, 1, '%')"><span class="rval" id="mrV">3.0%</span></div>
+          <div class="input-warn" id="mrW">1.5 ile 5 arasında, 0.1 artışlarla girin.</div>
+        </div>
+        <div class="field"><label>Vade</label>
+          <div class="rrow"><input type="range" id="mt" min="60" max="240" step="12" value="120" oninput="handleRangeInput('mt', this.value, calcMort, 0, ' ay', v=>v+' ay ('+Math.round(v/12)+' yıl)')"><input type="number" id="mtN" min="60" max="240" step="12" value="120" oninput="handleNumberInput('mt', this.value, calcMort, 0, ' ay', v=>v+' ay ('+Math.round(v/12)+' yıl)')"><span class="rval" id="mtV">120 ay (10 yıl)</span></div>
+          <div class="input-warn" id="mtW">60 ile 240 arasında, 12 ay artışlarla girin.</div>
+        </div>
+        <div class="ibox">
+          <div style="font-size:11px;margin-bottom:3px;">Aylık taksit</div>
+          <div style="font-size:20px;font-weight:500;" id="mort-pay">₺—</div>
+          <div style="font-size:11px;margin-top:4px;" id="mort-det"></div>
+          <div style="font-size:11px;margin-top:4px;font-weight:500;" id="mort-usd-cost"></div>
+          <div class="loan-src" id="mort-source">Elle girilen kredi varsayimi kullaniliyor.</div>
+        </div>
+        <div class="helper">Kredi Opt. sekmesinden bir konut teklifi secerseniz, faiz ve aylik taksit bu karta otomatik uygulanir.</div>
+      </div>
+
+      <div class="card">
+        <h3>Araç Finansmanı</h3>
+        <div class="field"><label>Araç fiyatı (₺)</label><input type="number" id="car-price" value="1600000" step="50000" oninput="calcCar()"></div>
+        <div class="field"><label>Peşinat (₺)</label><input type="number" id="car-dp" value="400000" step="50000" oninput="calcCar()"></div>
+        <div class="field"><label>Aylık faiz (%)</label>
+          <div class="rrow"><input type="range" id="car-r" min="1.5" max="6" step="0.1" value="3.2" oninput="handleRangeInput('car-r', this.value, calcCar, 1, '%')"><input type="number" id="car-rN" min="1.5" max="6" step="0.1" value="3.2" oninput="handleNumberInput('car-r', this.value, calcCar, 1, '%')"><span class="rval" id="car-rV">3.2%</span></div>
+          <div class="input-warn" id="car-rW">1.5 ile 6 arasında, 0.1 artışlarla girin.</div>
+        </div>
+        <div class="field"><label>Vade</label>
+          <div class="rrow"><input type="range" id="car-t" min="12" max="48" step="6" value="36" oninput="handleRangeInput('car-t', this.value, calcCar, 0, ' ay', v=>v+' ay')"><input type="number" id="car-tN" min="12" max="48" step="6" value="36" oninput="handleNumberInput('car-t', this.value, calcCar, 0, ' ay', v=>v+' ay')"><span class="rval" id="car-tV">36 ay</span></div>
+          <div class="input-warn" id="car-tW">12 ile 48 arasında, 6 ay artışlarla girin.</div>
+        </div>
+        <div class="ibox">
+          <div style="font-size:11px;margin-bottom:3px;">Aylık araç ödemesi</div>
+          <div style="font-size:20px;font-weight:500;" id="car-pay">₺—</div>
+          <div style="font-size:11px;margin-top:4px;" id="car-det"></div>
+          <div style="font-size:11px;margin-top:4px;font-weight:500;" id="car-usd-cost"></div>
+          <div class="loan-src" id="car-source">Elle girilen taşıt kredisi varsayimi kullaniliyor.</div>
+        </div>
+        <div class="helper">Bu odeme, Ulasim & Arac kategorisine otomatik eklenir ve toplam aylik giderin bir parcasi olur.</div>
+      </div>
+
+      <div class="card">
+        <h3>Secili kredi notlari</h3>
+        <div class="credit-summary">
+          <div class="mini-note" id="house-selected-note">Konut teklifi secilmedi.</div>
+          <div class="mini-note" id="car-selected-note">Tasit teklifi secilmedi.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Detaylı Giderler</h3>
+      <div class="inline-actions" style="margin-top:0;margin-bottom:8px;">
+        <button class="sub-btn" id="open-all-btn" onclick="setAllCategories(true)">Tumunu ac</button>
+        <button class="sub-btn" id="close-all-btn" onclick="setAllCategories(false)">Tumunu kapat</button>
+      </div>
+      <div class="helper" style="margin-bottom:8px;">Bu alan tek basina sag kolonda durur. Her kalemde slideri veya sayisal girisi kullanabilirsiniz.</div>
+      <div id="exp-cats"></div>
+    </div>
+  </div>
+</div>
+
+<div id="pane-reports" class="pane">
+  <div class="cards5">
+    <div class="mcard"><div class="mlbl">Toplam gelir</div><div class="mval" id="rep-inc">₺0</div></div>
+    <div class="mcard"><div class="mlbl">Toplam gider</div><div class="mval r" id="rep-exp">₺0</div></div>
+    <div class="mcard"><div class="mlbl">Aylık net</div><div class="mval" id="rep-bal">₺0</div></div>
+    <div class="mcard"><div class="mlbl">Kredi yükü</div><div class="mval" id="rep-credit">0%</div></div>
+    <div class="mcard"><div class="mlbl">Tasarruf oranı</div><div class="mval" id="rep-save">0%</div></div>
+  </div>
+  <div class="section-grid">
+    <div class="card">
+      <h3>Bütçe Analizi</h3>
+      <div id="afford-box" class="afford ok"></div>
+      <div class="pbar-w"><div class="pbar-top"><span>Kredi / gelir</span><span id="r1">—</span></div><div class="pbar"><div class="pfill" id="p1"></div></div><div style="font-size:10px;color:var(--color-text-tertiary)">Güvenli: maks. %40</div></div>
+      <div class="pbar-w"><div class="pbar-top"><span>Toplam gider / gelir</span><span id="r2">—</span></div><div class="pbar"><div class="pfill" id="p2"></div></div><div style="font-size:10px;color:var(--color-text-tertiary)">Güvenli: maks. %80</div></div>
+      <div class="pbar-w"><div class="pbar-top"><span>Tasarruf oranı</span><span id="r3">—</span></div><div class="pbar"><div class="pfill" id="p3"></div></div><div style="font-size:10px;color:var(--color-text-tertiary)">Hedef: min %20</div></div>
+      <div class="slbl">Özet</div>
+      <div class="res-row"><span class="res-lbl">Toplam gelir</span><span class="res-val" id="s1">—</span></div>
+      <div class="res-row"><span class="res-lbl">Konut taksiti</span><span class="res-val" id="s2">—</span></div>
+      <div class="res-row"><span class="res-lbl">Araç taksiti</span><span class="res-val" id="s2b">—</span></div>
+      <div class="res-row"><span class="res-lbl">Diğer giderler</span><span class="res-val" id="s3">—</span></div>
+      <div class="res-row"><span class="res-lbl">Net bakiye</span><span class="res-val" id="s4">—</span></div>
+      <div class="res-row"><span class="res-lbl">Tavsiye maks. kredi</span><span class="res-val" id="s5">—</span></div>
+    </div>
+    <div class="card">
+      <h3>Gider dağılımı</h3>
+      <div class="credit-summary" style="margin-bottom:10px;">
+        <div class="mini-note" id="report-house-selected-note">Konut teklifi secilmedi.</div>
+        <div class="mini-note" id="report-car-selected-note">Tasit teklifi secilmedi.</div>
+      </div>
+      <div class="chart-switch">
+        <button class="switch-btn active" id="exp-view-doughnut" onclick="setExpenseChartView('doughnut')">Donut</button>
+        <button class="switch-btn" id="exp-view-bar" onclick="setExpenseChartView('bar')">Bar</button>
+        <button class="switch-btn" id="exp-view-polarArea" onclick="setExpenseChartView('polarArea')">Polar</button>
+      </div>
+      <div style="margin-top:6px;"><canvas id="pieChart" role="img" aria-label="Monthly expense breakdown chart" width="240" height="160"></canvas></div>
+      <div class="legend" id="pie-leg"></div>
+    </div>
+  </div>
+  <div class="report-grid">
+    <div class="card">
+      <h3>Gider dağılımı karşılaştırması</h3>
+      <div class="chart-switch">
+        <button class="switch-btn" id="report-view-doughnut" onclick="setReportExpenseView('doughnut')">Pie</button>
+        <button class="switch-btn active" id="report-view-bar" onclick="setReportExpenseView('bar')">Bar</button>
+        <button class="switch-btn" id="report-view-radar" onclick="setReportExpenseView('radar')">Radar</button>
+        <button class="switch-btn" id="report-view-polarArea" onclick="setReportExpenseView('polarArea')">Polar</button>
+      </div>
+      <div class="chart-wrap report-tall"><canvas id="reportExpenseChart" role="img" aria-label="Expense distribution report chart"></canvas></div>
+      <div class="report-explainer" id="report-exp-explainer">Bu rapor, aylik giderlerinizi kategori bazinda okumanizi saglar. Bar gorunumu mutlak buyuklukleri hizli karsilastirir, radar gorunumu kategoriler arasindaki dengeyi gosterir, polar ve pie ise butcenin hangi kalemlerde yogunlastigini oran olarak okumayi kolaylastirir.</div>
+    </div>
+    <div class="card">
+      <h3>Kur hassasiyet raporu</h3>
+      <div class="chart-switch">
+        <button class="switch-btn active" id="fx-view-line" onclick="setReportFXView('line')">Line</button>
+        <button class="switch-btn" id="fx-view-bar" onclick="setReportFXView('bar')">Bar</button>
+        <button class="switch-btn" id="fx-view-radar" onclick="setReportFXView('radar')">Radar</button>
+        <button class="switch-btn" id="fx-view-doughnut" onclick="setReportFXView('doughnut')">Pie</button>
+      </div>
+      <div class="chart-wrap report-tall"><canvas id="reportFXChart" role="img" aria-label="Cash flow sensitivity to FX changes"></canvas></div>
+      <div class="report-explainer" id="report-fx-explainer">Kur hassasiyet raporu, USD/TRY farkli seviyelere geldiginde gelirinizin, giderinizin ve net bakiyenizin nasil degisebilecegini gosterir. Bu gorunum ozellikle tek gelirli USD hanelerde kurun sizin lehinize mi aleyhinize mi calistigini tek bakista anlatir.</div>
+    </div>
+    <div class="card">
+      <h3>Borc ve sabit yükler</h3>
+      <div class="chart-switch">
+        <button class="switch-btn active" id="debt-view-bar" onclick="setReportDebtView('bar')">Bar</button>
+        <button class="switch-btn" id="debt-view-radar" onclick="setReportDebtView('radar')">Radar</button>
+        <button class="switch-btn" id="debt-view-doughnut" onclick="setReportDebtView('doughnut')">Pie</button>
+        <button class="switch-btn" id="debt-view-polarArea" onclick="setReportDebtView('polarArea')">Polar</button>
+      </div>
+      <div class="chart-wrap report-tall"><canvas id="reportDebtChart" role="img" aria-label="Debt and fixed cost report chart"></canvas></div>
+      <div class="report-explainer" id="report-debt-explainer">Bu rapor, konut taksiti, arac taksiti ve diger duzenli giderlerin toplam yukun icindeki agirligini ayirir. En kritik soru sudur: sabit borc yukleri butcenin ne kadarini kilitliyor ve esneklik payi ne kadar kaliyor?</div>
+    </div>
+    <div class="card">
+      <h3>12 aylık genel görünüm</h3>
+      <div class="chart-switch">
+        <button class="switch-btn active" id="trend-view-line" onclick="setReportTrendView('line')">Line</button>
+        <button class="switch-btn" id="trend-view-bar" onclick="setReportTrendView('bar')">Bar</button>
+        <button class="switch-btn" id="trend-view-radar" onclick="setReportTrendView('radar')">Radar</button>
+        <button class="switch-btn" id="trend-view-doughnut" onclick="setReportTrendView('doughnut')">Pie</button>
+      </div>
+      <div class="chart-wrap report-tall"><canvas id="reportTrendChart" role="img" aria-label="Projected 12 month overview"></canvas></div>
+      <div class="report-explainer" id="report-trend-explainer">12 aylik genel gorunum, gelir ve gider trendlerinin mevcut varsayimlarla nasil ayrisabilecegini gosterir. Buradaki amac kesin tahmin vermek degil; giderler geliri gecmeye baslarsa bunu onceden fark ettirmektir.</div>
+    </div>
+    <div class="card report-wide">
+      <h3>Yorumlu özet</h3>
+      <div id="report-summary"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CURRENCY STRATEGY TAB -->
+<div id="pane-currency" class="pane">
+  <div class="card">
+    <h3>Ne kadarını TRY'ye çevirmelisiniz?</h3>
+    <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:12px;">Kötümser senaryo için optimize edilmiş: TRY değer kaybettikçe daha az çevirmek avantajlıdır.</div>
+
+    <div class="field"><label>Aylık TRY gideriniz (kredi dahil)</label><input type="number" id="cur-exp" value="80000" step="1000" oninput="curCalc()"></div>
+    <div class="field"><label>USD/TRY kuru</label>
+      <div class="rrow"><input type="range" id="cur-fx" min="38" max="70" step="0.5" value="43.5" oninput="handleRangeInput('cur-fx', this.value, curCalc, 2)"><input type="number" id="cur-fxN" min="38" max="70" step="0.5" value="43.5" oninput="handleNumberInput('cur-fx', this.value, curCalc, 2)"><span class="rval" id="cur-fxV">43.50</span></div>
+      <div class="input-warn" id="cur-fxW">38 ile 70 arasında, 0.5 artışlarla girin.</div>
+    </div>
+    <div class="field"><label>Aylık USD geliriniz</label><input type="number" id="cur-usd" value="2500" step="100" oninput="curCalc()"></div>
+
+    <div id="cur-result"></div>
+
+    <div class="slbl" style="margin-top:1.2rem;">Optimal dağılım</div>
+    <div class="split-bar">
+      <div class="split-try" id="split-try-bar" style="width:60%">TRY %60</div>
+      <div class="split-usd" id="split-usd-bar" style="width:40%">USD %40</div>
+    </div>
+    <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:16px;" id="split-note">Giderinizi karşılayacak minimum TRY çevirin, kalanı USD/EUR'da tutun.</div>
+  </div>
+
+  <div class="card">
+    <h3>Aylık dönüşüm stratejisi — kur senaryolarına göre</h3>
+    <div class="chart-wrap"><canvas id="curChart" role="img" aria-label="Required TRY conversion vs USD/TRY rate">Required monthly TRY conversion for different exchange rates.</canvas></div>
+    <div class="tip" style="margin-top:12px;"><b>Nasıl okunur:</b> Kur 43.5'ten 55'e çıkarsa, aynı TRY giderinizi karşılamak için çok daha az USD çevirmeniz yeterli. Bu nedenle kötümser senaryo aslında USD gelirli sizin için mali açıdan avantajlıdır — sadece kur şoklarına karşı tampon tutmalısınız.</div>
+  </div>
+
+  <div class="card">
+    <h3>Acil fon stratejisi (tek gelir — kritik)</h3>
+    <div class="warn-box" style="margin-bottom:12px;"><b>Tek gelirli haneler için:</b> İş kaybı veya gelir kesintisinde sıfır yedek geliriniz var. Bu, acil fonunuzun en az 9–12 aylık gideri karşılaması gerektiği anlamına gelir.</div>
+    <div id="emerg-result"></div>
+    <div class="tip"><b>Para birimi önerisi:</b> Acil fonunuzun %60–70'ini USD/EUR'da, kalanını TRY mevduat veya Türk altınında tutun. TRY'de tutarsanız enflasyon eritir; tamamen USD'de tutarsanız acil TRY giderlerinde kur riskiyle karşılaşırsınız.</div>
+  </div>
+
+  <div class="card">
+    <h3>Kur değişiminin bütçenize etkisi</h3>
+    <div class="chart-wrap"><canvas id="impactChart" role="img" aria-label="Budget impact of exchange rate changes">How budget changes at different USD/TRY exchange rates.</canvas></div>
+    <div class="tip" style="margin-top:12px;"><b>Kur düşerse (TRY güçlenirse):</b> Geliriniz TRY bazında azalır ve bu tek gerçek riskinizdir. <b>Kur yükselirse:</b> Geliriniz artar, giderleriniz dolar bazında ucuzlar. Riskiniz simetrik değil — yükselmesi sizi iyileştirir, düşmesi kötüleştirir.</div>
+  </div>
+</div>
+
+<!-- INFLATION HISTORY TAB -->
+<div id="pane-inflation" class="pane">
+  <div class="cards3">
+    <div class="mcard"><div class="mlbl">2022 Zirve enflasyon</div><div class="mval a">%72.3</div><div class="msub">Modern Türkiye rekoru</div></div>
+    <div class="mcard"><div class="mlbl">2025 yıl sonu</div><div class="mval a">%30.9</div><div class="msub">Düşüş eğiliminde</div></div>
+    <div class="mcard"><div class="mlbl">USD/TRY (2020→2026)</div><div class="mval r">7.0 → 43.5</div><div class="msub">TRY değer kaybı: -%84</div></div>
+  </div>
+  <div class="two">
+    <div class="card">
+      <h3>Yıllık TÜİK Enflasyonu (2020–2026)</h3>
+      <div class="chart-wrap"><canvas id="inflChart" role="img" aria-label="Turkey annual CPI inflation 2020-2026">CPI: 2020:12.3%, 2021:19.6%, 2022:72.3%, 2023:53.9%, 2024:44.4%, 2025:30.9%, 2026:~26%.</canvas></div>
+    </div>
+    <div class="card">
+      <h3>USD/TRY Kuru (2020–2026)</h3>
+      <div class="chart-wrap"><canvas id="fxHistChart" role="img" aria-label="USD/TRY historical exchange rate 2020-2026">Exchange rates per year from 7.0 in 2020 to 43.5 in 2026.</canvas></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>$2,500 gelirinizin TRY karşılığı — geçmiş yıllarda alsaydınız</h3>
+    <div class="chart-wrap tall"><canvas id="retroChart" role="img" aria-label="Retrospective TRY value of $2500 income and mortgage affordability">TRY value of $2500 income each year and how mortgage payments compare.</canvas></div>
+    <div class="tip" style="margin-top:12px;"><b>2020'de alsaydınız ne olurdu?</b> $2,500, o zaman ₺17,500 ediyordu. Bugün aynı tutar ₺108,750 — 6.2 kat fazla TRY. Aynı TRY taksiti bugün çok daha az USD değerinde. Bu, TRY bazlı mortgage'ın USD kazanan için zamanla "eriyen" bir borç olduğunu kanıtlıyor.</div>
+  </div>
+  <div class="card">
+    <h3>₺10,000'in satın alma gücü kaybı (2020–2026)</h3>
+    <div class="chart-wrap"><canvas id="ppChart" role="img" aria-label="Purchasing power of 10000 TRY from 2020 to 2026">Cumulative inflation erodes purchasing power of 10,000 TRY significantly by 2026.</canvas></div>
+  </div>
+</div>
+
+<!-- PROJECTION TAB -->
+<div id="pane-projection" class="pane">
+  <div class="scenario-hl sc-main">
+    <div class="sc-title">⚡ SİZİN SENARYONUZ — Kötümser (TRY değer kaybetmeye devam eder)</div>
+    <div class="sc-rate">%30–40 / yıl kur artışı</div>
+    <div class="sc-desc">USD/TRY'nin 2031'e kadar 90–120 bandına yükselmesi bekleniyor. TRY giderleriniz artarken, USD geliriniz bu artışı otomatik olarak karşılıyor. Tek risk: kısa vadeli kur düzeltmeleri.</div>
+  </div>
+  <div class="two">
+    <div class="scenario-hl sc-opt">
+      <div class="sc-title">İyimser senaryo</div>
+      <div class="sc-rate">%10–12 / yıl</div>
+      <div class="sc-desc">TCMB politikası tutarlı kalır, enflasyon %10'a iner, TRY görece stabilleşir. Bu senaryoda USD gelirinizin TRY değeri daha yavaş büyür.</div>
+    </div>
+    <div class="scenario-hl sc-mid">
+      <div class="sc-title">Baz senaryo</div>
+      <div class="sc-rate">%18–22 / yıl</div>
+      <div class="sc-desc">Mevcut trend sürer. Enflasyon %20–25'te dengelenir, kur kademeli yükselir.</div>
+    </div>
+  </div>
+
+  <div class="two">
+    <div class="card">
+      <h3>USD/TRY Projeksiyon 2026–2031</h3>
+      <div class="chart-wrap"><canvas id="fxProj" role="img" aria-label="USD/TRY projected 2026-2031 three scenarios">Three scenario projections for USD/TRY exchange rate.</canvas></div>
+      <div class="legend"><span><span class="dot" style="background:#E24B4A"></span>Kötümser (sizin görüşünüz)</span><span><span class="dot" style="background:#378ADD"></span>Baz</span><span><span class="dot" style="background:#639922"></span>İyimser</span></div>
+    </div>
+    <div class="card">
+      <h3>$2,500 Gelirinizin TRY Değeri 2026–2031</h3>
+      <div class="chart-wrap"><canvas id="incProj" role="img" aria-label="TRY value of $2500 income projected 2026-2031">Projected TRY equivalent of $2500 income through 2031.</canvas></div>
+      <div class="legend"><span><span class="dot" style="background:#E24B4A"></span>Kötümser</span><span><span class="dot" style="background:#378ADD"></span>Baz</span><span><span class="dot" style="background:#639922"></span>İyimser</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Kredi taksidinizin gerçek USD maliyeti 2026–2031 — Kötümser senaryo önde</h3>
+    <div class="chart-wrap"><canvas id="mortProj" role="img" aria-label="Real USD cost of mortgage payment declining over time">Mortgage payment USD cost declining as TRY weakens.</canvas></div>
+    <div class="legend"><span><span class="dot" style="background:#E24B4A;height:3px;border-radius:0;"></span>Kötümser (taksit hızla ucuzlar)</span><span><span class="dot" style="background:#378ADD"></span>Baz</span><span><span class="dot" style="background:#639922"></span>İyimser (taksit en az ucuzlar)</span></div>
+    <div class="tip" style="margin-top:12px;"><b>Kötümser senaryo paradoksu:</b> TRY ne kadar çok değer kaybederse, ₺ cinsinden taksitiniz USD bazında o kadar ucuzlar. 5 yılda taksitiniz $50–80'e düşebilir. Bu, USD kazananlar için TRY bazlı mortgage'ın en büyük avantajıdır.</div>
+  </div>
+
+  <div class="card">
+    <h3>Eş geliri "açıldığında" bütçe etkisi</h3>
+    <div class="chart-wrap"><canvas id="partnerProj" role="img" aria-label="Budget improvement when partner starts earning">How adding partner income changes budget balance over time.</canvas></div>
+    <div class="tip" style="margin-top:12px;"><b>Partner geliri başladığında:</b> Kötümser senaryoda bile ek USD geliri büyük tampon sağlar. Her $500 ek gelir, bugünkü kurda ₺21,750 ek kapasitedır. Bu "gelecek kilit açma" evinizi almanın en güçlü gerekçelerinden biridir.</div>
+  </div>
+</div>
+
+<!-- MORTGAGE OPTIMIZATION TAB -->
+<div id="pane-mortgage" class="pane">
+  <div class="card">
+    <h3>Senaryo karşılaştırması — $2,500 USD gelir, ~₺43.5 kur</h3>
+    <div id="opt-table"></div>
+  </div>
+  <div class="two">
+    <div class="card">
+      <h3>Toplam ödeme karşılaştırması</h3>
+      <div class="chart-wrap"><canvas id="optBarChart" role="img" aria-label="Total mortgage payment comparison">Total payment across different scenarios.</canvas></div>
+    </div>
+    <div class="card">
+      <h3>Aylık taksit (₺ ve USD)</h3>
+      <div class="chart-wrap"><canvas id="optMontChart" role="img" aria-label="Monthly payment in TRY and USD across scenarios">Monthly mortgage payment comparison.</canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>USD kazanan için öneriler — kötümser senaryo gözetilerek</h3>
+    <div class="tip"><b>1. Uzun vade tercih edin (15–20 yıl):</b> TRY değer kaybederken ilerideki taksitlerinizin USD maliyeti dramatik biçimde düşer. Uzun vadeli kredi = zamanla eriyecek bir borç.</div>
+    <div class="tip"><b>2. Peşinatı minimumda tutun:</b> Fazla peşinat yerine, parayı USD mevduat/eurobond'da değerlendirin. Yıllık %6–8 USD getiri vs. erken ödemenin tasarrufu — USD tarafı genellikle kazanır.</div>
+    <div class="tip"><b>3. Sabit faiz, TRY cinsinden kredi:</b> Kur endeksli veya değişken faizli kredilerden uzak durun. Sabit TRY taksiti en öngörülebilir senaryodur.</div>
+    <div class="tip"><b>4. Erken ödeme yapmayın:</b> TRY değer kaybettikçe borcunuzun reel değeri zaten azalıyor. Fazla geliri USD birikimine yönlendirin.</div>
+    <div class="tip"><b>5. Tek gelir tampon zorunluluğu:</b> Taksit + gider toplamı $1,500 USD'yi geçmemeli. $1,000 USD/ay minimum tampon bırakın — eş henüz gelir getirmiyor.</div>
+    <div class="tip"><b>6. Faiz düşüşünü bekleyin?</b> TCMB 2026'da faiz indirimlerini sürdürüyor. %3.0 aylık yerine %2.0'a düşmesi, 10 yıllık kredide ₺1.5–2M tasarruf anlamına gelebilir. Birkaç ay beklemek değer olabilir.</div>
+  </div>
+
+  <div class="card">
+    <h3>Simülatör</h3>
+    <div class="two" style="margin-bottom:10px;">
+      <div>
+        <div class="field"><label>Ev fiyatı (₺)</label><input type="number" id="sim-hp" value="5000000" step="100000" oninput="simCalc()"></div>
+        <div class="field"><label>Peşinat (₺)</label><input type="number" id="sim-dp" value="1500000" step="100000" oninput="simCalc()"></div>
+        <div class="field"><label>Aylık faiz (%)</label><div class="rrow"><input type="range" id="sim-r" min="1.5" max="5" step="0.1" value="3.0" oninput="handleRangeInput('sim-r', this.value, simCalc, 1, '%')"><input type="number" id="sim-rN" min="1.5" max="5" step="0.1" value="3.0" oninput="handleNumberInput('sim-r', this.value, simCalc, 1, '%')"><span class="rval" id="sim-rV">3.0%</span></div><div class="input-warn" id="sim-rW">1.5 ile 5 arasında, 0.1 artışlarla girin.</div></div>
+      </div>
+      <div>
+        <div class="field"><label>Vade (ay)</label><div class="rrow"><input type="range" id="sim-t" min="60" max="240" step="12" value="120" oninput="handleRangeInput('sim-t', this.value, simCalc, 0, ' ay', v=>v+' ay')"><input type="number" id="sim-tN" min="60" max="240" step="12" value="120" oninput="handleNumberInput('sim-t', this.value, simCalc, 0, ' ay', v=>v+' ay')"><span class="rval" id="sim-tV">120 ay</span></div><div class="input-warn" id="sim-tW">60 ile 240 arasında, 12 ay artışlarla girin.</div></div>
+        <div class="field"><label>USD gelir</label><input type="number" id="sim-usd" value="2500" step="100" oninput="simCalc()"></div>
+        <div class="field"><label>USD/TRY</label><div class="rrow"><input type="range" id="sim-fx" min="38" max="70" step="0.5" value="43.5" oninput="handleRangeInput('sim-fx', this.value, simCalc, 1)"><input type="number" id="sim-fxN" min="38" max="70" step="0.5" value="43.5" oninput="handleNumberInput('sim-fx', this.value, simCalc, 1)"><span class="rval" id="sim-fxV">43.5</span></div><div class="input-warn" id="sim-fxW">38 ile 70 arasında, 0.5 artışlarla girin.</div></div>
+      </div>
+    </div>
+    <div id="sim-res"></div>
+  </div>
+
+  <div class="card">
+    <h3>Canlı kredi karşılaştırması — CollectAPI</h3>
+    <div class="field"><label>CollectAPI token</label><input type="password" id="api-token" placeholder="apikey için token girin"></div>
+    <div class="two" style="margin-bottom:10px;">
+      <div>
+        <div class="field"><label>Konut teklifi için tutar</label><input type="number" id="api-house-amount" value="3500000" step="50000"></div>
+        <div class="field"><label>Konut vadesi (ay)</label><input type="number" id="api-house-term" value="120" step="12"></div>
+      </div>
+      <div>
+        <div class="field"><label>Taşıt teklifi için tutar</label><input type="number" id="api-car-amount" value="1200000" step="50000"></div>
+        <div class="field"><label>Taşıt vadesi (ay)</label><input type="number" id="api-car-term" value="36" step="6"></div>
+      </div>
+    </div>
+    <div class="rrow" style="justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div class="api-note" id="api-sync-note">Konut tutarı, simülatördeki kredi ihtiyacına göre otomatik eşitlenir.</div>
+      <button class="action-btn" id="api-fetch-btn" onclick="fetchCollectRates()">Faizleri çek</button>
+    </div>
+    <div class="api-grid">
+      <div class="api-box">
+        <div class="api-head">
+          <div>
+            <div class="api-title">Konut kredisi</div>
+            <div class="api-sub" id="api-house-meta">Teklif bekleniyor</div>
+          </div>
+        </div>
+        <div id="api-house-results" class="loan-list"><div class="tip">Konut teklifleri için token girip sorgu çalıştırın.</div></div>
+      </div>
+      <div class="api-box">
+        <div class="api-head">
+          <div>
+            <div class="api-title">Taşıt kredisi</div>
+            <div class="api-sub" id="api-car-meta">Teklif bekleniyor</div>
+          </div>
+        </div>
+        <div id="api-car-results" class="loan-list"><div class="tip">Taşıt teklifleri için tutar ve vadeyi güncelleyebilirsiniz.</div></div>
+      </div>
+    </div>
+    <div class="api-note" id="api-status">Kullanılan endpointler: `/credit/creditBid`, `/credit/konutKredi`, `/credit/tasitKredi`.</div>
+    <div class="helper">"Butceye uygula" butonu; secilen teklifin faizini, vadesini ve varsa API aylik odemesini ana sayfadaki konut veya arac finansman kartina yazar.</div>
+  </div>
+</div>
+
+<!-- RISK TAB -->
+<div id="pane-risk" class="pane">
+  <div class="card">
+    <h3>Risk profili — tek gelirli USD hane, Türkiye 2026</h3>
+    <div id="risk-items"></div>
+  </div>
+
+  <div class="unlock-box">
+    <h3 style="color:var(--color-text-success);">🔓 "Eş Geliri" Kilit Açıcı</h3>
+    <div style="font-size:13px;color:var(--color-text-secondary);margin-top:8px;margin-bottom:12px;">Eşiniz gelir kazanmaya başladığında tüm riskler dramatik biçimde azalır. Bu, ev almak için en güçlü orta vadeli argümanınız.</div>
+    <div class="field" style="max-width:300px;"><label>Eşin planlanan USD geliri</label><input type="number" id="risk-partner" value="1000" step="100" oninput="riskCalc()"></div>
+    <div class="field" style="max-width:320px;"><label>Kaç ay sonra başlayacak?</label><div class="rrow"><input type="range" id="risk-months" min="1" max="36" step="1" value="12" oninput="handleRangeInput('risk-months', this.value, riskCalc, 0, ' ay', v=>v+' ay')"><input type="number" id="risk-monthsN" min="1" max="36" step="1" value="12" oninput="handleNumberInput('risk-months', this.value, riskCalc, 0, ' ay', v=>v+' ay')"><span class="rval" id="risk-mV">12 ay</span></div><div class="input-warn" id="risk-monthsW">1 ile 36 arasında tam sayı girin.</div></div>
+    <div id="unlock-result"></div>
+  </div>
+
+  <div class="card">
+    <h3>Stres testi — en kötü senaryolar</h3>
+    <div id="stress-test"></div>
+  </div>
+</div>
+
+<script src="lang_en.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const f=n=>'₺'+Math.round(n).toLocaleString('tr-TR');
+const fd=n=>'$'+Math.round(n).toLocaleString('en-US');
+const fp=n=>Math.round(n)+'%';
+const cl=(v,lo,hi)=>Math.min(hi,Math.max(lo,v));
+const COLLECT_API_BASE='https://api.collectapi.com/credit';
+const COLLECT_API_TOKEN='apikey 24EcPgdyC00yd0hRFdM3HU:0AExvKIX2dsrxkBIA0EIRk';
+const THEME_STORAGE_KEY='budget-codex-theme';
+const LANG_STORAGE_KEY='budget-codex-lang';
+
+const CATS=[
+  {key:'housing',name:'Konut & Aidat',color:'#185FA5',items:[
+    {k:'mortgage',n:'Kredi taksiti',v:0,fixed:true},
+    {k:'aidat',n:'Aidat / site gideri',v:2000,max:6000},
+    {k:'dask',n:'DASK + konut sigortası',v:800,max:3000},
+    {k:'repair',n:'Bina bakım / onarım',v:500,max:5000},
+  ]},
+  {key:'food',name:'Market & Yiyecek',color:'#0F6E56',items:[
+    {k:'produce',n:'Sebze & meyve',v:2500,max:8000},
+    {k:'meat',n:'Et & protein',v:3500,max:10000},
+    {k:'dry',n:'Kuru gıda & bakliyat',v:1800,max:5000},
+    {k:'cleaning',n:'Temizlik ürünleri',v:1200,max:4000},
+    {k:'personal',n:'Kişisel bakım',v:800,max:4000},
+  ]},
+  {key:'dining',name:'Dışarıda Yemek',color:'#1D9E75',items:[
+    {k:'rest',n:'Restoran',v:2500,max:8000},
+    {k:'cafe',n:'Kafe & kahve',v:1200,max:5000},
+    {k:'worklunch',n:'İş yemeği / paket yemek',v:1000,max:4000},
+  ]},
+  {key:'utils',name:'Faturalar',color:'#639922',items:[
+    {k:'elec',n:'Elektrik',v:2500,max:8000},
+    {k:'gas',n:'Doğalgaz & ısıtma',v:2000,max:6000},
+    {k:'water',n:'Su & atıksu',v:600,max:2000},
+  ]},
+  {key:'transport',name:'Ulaşım & Araç',color:'#BA7517',items:[
+    {k:'carloan',n:'Arac finansmani',v:0,fixed:true},
+    {k:'fuel',n:'Akaryakıt',v:3500,max:10000},
+    {k:'kasko',n:'Kasko sigortası',v:1500,max:5000},
+    {k:'traffic',n:'Trafik sigortası / MTV',v:600,max:2000},
+    {k:'service',n:'Rutin bakım (yağ vb.)',v:600,max:3000},
+    {k:'carrepair',n:'Arızi onarım / lastik',v:700,max:5000},
+    {k:'parking',n:'Otopark / köprü geçiş',v:300,max:2000},
+  ]},
+  {key:'health',name:'Sağlık',color:'#D4537E',items:[
+    {k:'insurance',n:'Özel sağlık sigortası (2 kişi)',v:4500,max:15000},
+    {k:'doctor',n:'Doktor / uzman muayene',v:500,max:3000},
+    {k:'meds',n:'İlaç & eczane',v:400,max:3000},
+    {k:'dental',n:'Diş hekimi',v:300,max:3000},
+    {k:'lab',n:'Tahlil & görüntüleme',v:200,max:2000},
+  ]},
+  {key:'comms',name:'İletişim',color:'#7F77DD',items:[
+    {k:'internet',n:'Ev interneti',v:600,max:2000},
+    {k:'phone1',n:'Telefon hattı (1)',v:700,max:2000},
+    {k:'phone2',n:'Telefon hattı (2)',v:700,max:2000},
+    {k:'phone_hw',n:'Telefon / aksesuar / yenileme',v:300,max:3000},
+  ]},
+  {key:'subs',name:'Abonelikler',color:'#534AB7',items:[
+    {k:'netflix',n:'Netflix / BluTV / Disney+',v:400,max:2000},
+    {k:'spotify',n:'Spotify / müzik',v:250,max:1000},
+    {k:'cloud',n:'Cloud (Google / iCloud)',v:150,max:1000},
+    {k:'gaming',n:'Oyun platformları',v:300,max:2000},
+    {k:'sw',n:'Yazılım lisansları (Adobe vb.)',v:500,max:3000},
+    {k:'othersub',n:'Diğer abonelikler',v:200,max:2000},
+  ]},
+  {key:'life',name:'Yaşam & Eğlence',color:'#D85A30',items:[
+    {k:'clothing',n:'Giyim & aksesuar',v:2500,max:10000},
+    {k:'entertainment',n:'Sinema / konser / etkinlik',v:800,max:5000},
+    {k:'sports',n:'Spor salonu / aktivite',v:600,max:3000},
+    {k:'travel',n:'Seyahat (aylık ortalama)',v:1500,max:10000},
+    {k:'gifts',n:'Hediye & sosyal',v:500,max:3000},
+  ]},
+  {key:'savings',name:'Tasarruf & Acil Fon',color:'#3B6D11',items:[
+    {k:'emerg',n:'Acil fon birikimi (USD hedef)',v:5000,max:20000},
+    {k:'invest',n:'Yatırım (hisse / altın / fon)',v:3000,max:20000},
+    {k:'othersav',n:'Diğer tasarruf',v:1000,max:10000},
+  ]},
+  {key:'other',name:'Diger harcamalar',color:'#5E7088',items:[
+    {k:'pocket',n:'Harclik / cep harcligi',v:1200,max:5000},
+    {k:'familysupport',n:'Aile destegi',v:1000,max:8000},
+    {k:'cleanhelp',n:'Ev yardimi / temizlik',v:1200,max:6000},
+    {k:'education',n:'Egitim / kurs',v:1500,max:8000},
+    {k:'pet',n:'Evcil hayvan giderleri',v:800,max:5000},
+    {k:'membership',n:'Dernek / apartman disi aidat',v:400,max:3000},
+    {k:'online',n:'Duzenli online alisveris',v:1200,max:6000},
+  ]},
+];
+
+let mortPay=0, carPay=0, openCats={};
+let pieChart;
+let selectedOffers={house:null,car:null};
+let lastLoanResults={houseBid:[],carBid:[],houseGeneral:[],carGeneral:[]};
+let extraItemsByCat={other:[]};
+let expenseChartView='doughnut';
+let reportExpenseView='bar';
+let reportFxView='line';
+let reportDebtView='bar';
+let reportTrendView='line';
+let reportCharts={expense:null,fx:null,debt:null,trend:null};
+let budgetSnapshot={catTotals:{},totalInc:0,grandExp:0,bal:0,savR:0,creditLoad:0,fx:43.5,usd:2500,mortPay:0,carPay:0};
+let currentLang='tr';
+let trStaticSnapshot=null;
+const UI_TEXT={
+  tr:{
+    categories:{housing:'Konut & Aidat',food:'Market & Yiyecek',dining:'Dışarıda Yemek',utils:'Faturalar',transport:'Ulaşım & Araç',health:'Sağlık',comms:'İletişim',subs:'Abonelikler',life:'Yaşam & Eğlence',savings:'Tasarruf & Acil Fon',other:'Diger harcamalar'},
+    items:{
+      mortgage:'Kredi taksiti',aidat:'Aidat / site gideri',dask:'DASK + konut sigortası',repair:'Bina bakım / onarım',
+      produce:'Sebze & meyve',meat:'Et & protein',dry:'Kuru gıda & bakliyat',cleaning:'Temizlik ürünleri',personal:'Kişisel bakım',
+      rest:'Restoran',cafe:'Kafe & kahve',worklunch:'İş yemeği / paket yemek',
+      elec:'Elektrik',gas:'Doğalgaz & ısıtma',water:'Su & atıksu',
+      carloan:'Arac finansmani',fuel:'Akaryakıt',kasko:'Kasko sigortası',traffic:'Trafik sigortası / MTV',service:'Rutin bakım (yağ vb.)',carrepair:'Arızi onarım / lastik',parking:'Otopark / köprü geçiş',
+      insurance:'Özel sağlık sigortası (2 kişi)',doctor:'Doktor / uzman muayene',meds:'İlaç & eczane',dental:'Diş hekimi',lab:'Tahlil & görüntüleme',
+      internet:'Ev interneti',phone1:'Telefon hattı (1)',phone2:'Telefon hattı (2)',phone_hw:'Telefon / aksesuar / yenileme',
+      netflix:'Netflix / BluTV / Disney+',spotify:'Spotify / müzik',cloud:'Cloud (Google / iCloud)',gaming:'Oyun platformları',sw:'Yazılım lisansları (Adobe vb.)',othersub:'Diğer abonelikler',
+      clothing:'Giyim & aksesuar',entertainment:'Sinema / konser / etkinlik',sports:'Spor salonu / aktivite',travel:'Seyahat (aylık ortalama)',gifts:'Hediye & sosyal',
+      emerg:'Acil fon birikimi (USD hedef)',invest:'Yatırım (hisse / altın / fon)',othersav:'Diğer tasarruf',
+      pocket:'Harclik / cep harcligi',familysupport:'Aile destegi',cleanhelp:'Ev yardimi / temizlik',education:'Egitim / kurs',pet:'Evcil hayvan giderleri',membership:'Dernek / apartman disi aidat',online:'Duzenli online alisveris'
+    }
+  },
+  en:{
+    categories:{housing:'Housing & Building Fees',food:'Groceries & Food',dining:'Dining Out',utils:'Utilities',transport:'Transport & Vehicle',health:'Health',comms:'Communication',subs:'Subscriptions',life:'Lifestyle & Leisure',savings:'Savings & Emergency Fund',other:'Other Recurring Expenses'},
+    items:{
+      mortgage:'Loan installment',aidat:'Building / site fee',dask:'Home insurance + DASK',repair:'Building maintenance / repair',
+      produce:'Produce',meat:'Meat & protein',dry:'Dry goods & legumes',cleaning:'Cleaning supplies',personal:'Personal care',
+      rest:'Restaurants',cafe:'Cafe & coffee',worklunch:'Work lunch / takeaway',
+      elec:'Electricity',gas:'Natural gas & heating',water:'Water & wastewater',
+      carloan:'Vehicle financing',fuel:'Fuel',kasko:'Comprehensive car insurance',traffic:'Traffic insurance / motor tax',service:'Routine maintenance',carrepair:'Unexpected repairs / tires',parking:'Parking / tolls',
+      insurance:'Private health insurance (2 people)',doctor:'Doctor / specialist visits',meds:'Medicine & pharmacy',dental:'Dentist',lab:'Tests & imaging',
+      internet:'Home internet',phone1:'Phone line (1)',phone2:'Phone line (2)',phone_hw:'Phone / accessory / renewal',
+      netflix:'Netflix / streaming',spotify:'Spotify / music',cloud:'Cloud storage',gaming:'Gaming platforms',sw:'Software licenses',othersub:'Other subscriptions',
+      clothing:'Clothing & accessories',entertainment:'Cinema / concerts / events',sports:'Gym / activities',travel:'Travel (monthly average)',gifts:'Gifts & social',
+      emerg:'Emergency fund savings (USD target)',invest:'Investments (stocks / gold / funds)',othersav:'Other savings',
+      pocket:'Pocket money',familysupport:'Family support',cleanhelp:'Home help / cleaning',education:'Education / courses',pet:'Pet expenses',membership:'Association / external fees',online:'Regular online shopping'
+    }
+  }
+};
+
+function getEmbeddedToken(){
+  return (COLLECT_API_TOKEN||'').trim();
+}
+
+function normalizeApiToken(token){
+  return String(token||'').trim().replace(/^apikey\s+/i,'');
+}
+
+function resolveApiToken(){
+  return normalizeApiToken(getEmbeddedToken()||(document.getElementById('api-token')?.value||'').trim());
+}
+
+function applyTheme(theme){
+  const next=theme==='light'?'light':'dark';
+  document.body.setAttribute('data-theme',next);
+  localStorage.setItem(THEME_STORAGE_KEY,next);
+  const btn=document.getElementById('theme-toggle');
+  if(btn)btn.textContent=next==='dark'?'☀':'🌙';
+}
+
+function toggleTheme(){
+  applyTheme(document.body.getAttribute('data-theme')==='dark'?'light':'dark');
+}
+
+function initTheme(){
+  const saved=localStorage.getItem(THEME_STORAGE_KEY);
+  applyTheme(saved||'dark');
+}
+
+function captureStaticTexts(){
+  if(trStaticSnapshot)return;
+  trStaticSnapshot={
+    tabs:[...document.querySelectorAll('.tabs .tab')].map(el=>el.textContent),
+    h3:[...document.querySelectorAll('h3')].map(el=>el.textContent),
+    hero:[...document.querySelectorAll('.hero h1, .hero p')].map(el=>el.textContent),
+    labels:[...document.querySelectorAll('label')].map(el=>el.textContent),
+    mlbls:[...document.querySelectorAll('.mlbl')].map(el=>el.textContent),
+    welcomeTitles:[...document.querySelectorAll('.welcome-card h4')].map(el=>el.textContent),
+    welcomeBodies:[...document.querySelectorAll('.welcome-card p')].map(el=>el.textContent),
+    tips:[...document.querySelectorAll('#pane-welcome .tip, #pane-welcome .mini-note')].map(el=>el.innerHTML),
+    helperTexts:[...document.querySelectorAll('#pane-welcome .helper')].map(el=>el.textContent)
+  };
+}
+
+function applyStaticLanguage(lang){
+  captureStaticTexts();
+  const pack=window.BUDGET_LANG_EN;
+  if(lang==='en'&&pack){
+    [...document.querySelectorAll('.tabs .tab')].forEach((el,i)=>{if(pack.tabs?.[i])el.textContent=pack.tabs[i];});
+    [...document.querySelectorAll('h3')].forEach((el,i)=>{if(pack.h3?.[i])el.textContent=pack.h3[i];});
+    [...document.querySelectorAll('.hero h1, .hero p')].forEach((el,i)=>{if(pack.hero?.[i])el.textContent=pack.hero[i];});
+    [...document.querySelectorAll('label')].forEach((el,i)=>{if(pack.labels?.[i])el.textContent=pack.labels[i];});
+    [...document.querySelectorAll('.mlbl')].forEach((el,i)=>{if(pack.mlbls?.[i])el.textContent=pack.mlbls[i];});
+    [...document.querySelectorAll('.welcome-card h4')].forEach((el,i)=>{if(pack.welcomeTitles?.[i])el.textContent=pack.welcomeTitles[i];});
+    [...document.querySelectorAll('.welcome-card p')].forEach((el,i)=>{if(pack.welcomeBodies?.[i])el.textContent=pack.welcomeBodies[i];});
+    [...document.querySelectorAll('#pane-welcome .tip, #pane-welcome .mini-note')].forEach((el,i)=>{if(pack.welcomeTips?.[i])el.innerHTML=pack.welcomeTips[i];});
+    [...document.querySelectorAll('#pane-welcome .helper')].forEach((el,i)=>{if(pack.welcomeHelpers?.[i])el.textContent=pack.welcomeHelpers[i];});
+    const map={
+      'report-exp-explainer':"This report helps you read monthly expenses by category. Bar view is best for comparing absolute size, radar highlights balance across categories, and polar or pie views make it easier to see which parts of the budget dominate the whole.",
+      'report-fx-explainer':"The FX sensitivity report shows how income, expenses, and net balance may shift when USD/TRY moves across different levels. It is especially helpful for single-income USD households that want to understand whether FX is acting as a buffer or a pressure point.",
+      'report-debt-explainer':"This report separates home installments, vehicle installments, and other recurring costs. The key question is simple: how much of your budget is locked by fixed debt and how much flexibility remains?",
+      'report-trend-explainer':"The 12-month overview projects how income and expenses may drift apart under current assumptions. It is not meant to be a precise forecast; it is meant to surface pressure early if recurring costs begin to outpace income.",
+      'tpl-status':"This template is optional. It creates a starting point and every field remains editable afterward.",
+      'open-all-btn':'Open all',
+      'close-all-btn':'Close all'
+    };
+    Object.entries(map).forEach(([id,val])=>{const el=document.getElementById(id); if(el) el.textContent=val;});
+  }else if(trStaticSnapshot){
+    [...document.querySelectorAll('.tabs .tab')].forEach((el,i)=>{el.textContent=trStaticSnapshot.tabs[i]||el.textContent;});
+    [...document.querySelectorAll('h3')].forEach((el,i)=>{el.textContent=trStaticSnapshot.h3[i]||el.textContent;});
+    [...document.querySelectorAll('.hero h1, .hero p')].forEach((el,i)=>{el.textContent=trStaticSnapshot.hero[i]||el.textContent;});
+    [...document.querySelectorAll('label')].forEach((el,i)=>{el.textContent=trStaticSnapshot.labels[i]||el.textContent;});
+    [...document.querySelectorAll('.mlbl')].forEach((el,i)=>{el.textContent=trStaticSnapshot.mlbls[i]||el.textContent;});
+    [...document.querySelectorAll('.welcome-card h4')].forEach((el,i)=>{el.textContent=trStaticSnapshot.welcomeTitles[i]||el.textContent;});
+    [...document.querySelectorAll('.welcome-card p')].forEach((el,i)=>{el.textContent=trStaticSnapshot.welcomeBodies[i]||el.textContent;});
+    [...document.querySelectorAll('#pane-welcome .tip, #pane-welcome .mini-note')].forEach((el,i)=>{el.innerHTML=trStaticSnapshot.tips[i]||el.innerHTML;});
+    [...document.querySelectorAll('#pane-welcome .helper')].forEach((el,i)=>{el.textContent=trStaticSnapshot.helperTexts[i]||el.textContent;});
+    const map={
+      'report-exp-explainer':'Bu rapor, aylik giderlerinizi kategori bazinda okumanizi saglar. Bar gorunumu mutlak buyuklukleri hizli karsilastirir, radar gorunumu kategoriler arasindaki dengeyi gosterir, polar ve pie ise butcenin hangi kalemlerde yogunlastigini oran olarak okumayi kolaylastirir.',
+      'report-fx-explainer':'Kur hassasiyet raporu, USD/TRY farkli seviyelere geldiginde gelirinizin, giderinizin ve net bakiyenizin nasil degisebilecegini gosterir. Bu gorunum ozellikle tek gelirli USD hanelerde kurun sizin lehinize mi aleyhinize mi calistigini tek bakista anlatir.',
+      'report-debt-explainer':'Bu rapor, konut taksiti, arac taksiti ve diger duzenli giderlerin toplam yukun icindeki agirligini ayirir. En kritik soru sudur: sabit borc yukleri butcenin ne kadarini kilitliyor ve esneklik payi ne kadar kaliyor?',
+      'report-trend-explainer':'12 aylik genel gorunum, gelir ve gider trendlerinin mevcut varsayimlarla nasil ayrisabilecegini gosterir. Buradaki amac kesin tahmin vermek degil; giderler geliri gecmeye baslarsa bunu onceden fark ettirmektir.',
+      'tpl-status':'Bu taslak istege baglidir. Baslangic noktasi uretir, sonra tum alanlar tek tek duzenlenebilir.',
+      'open-all-btn':'Tumunu ac',
+      'close-all-btn':'Tumunu kapat'
+    };
+    Object.entries(map).forEach(([id,val])=>{const el=document.getElementById(id); if(el) el.textContent=val;});
+  }
+}
+
+function changeLanguage(lang){
+  currentLang=lang==='en'?'en':'tr';
+  localStorage.setItem(LANG_STORAGE_KEY,currentLang);
+  document.getElementById('lang-select').value=currentLang;
+  applyStaticLanguage(currentLang);
+  buildCats();
+  applyDeepTranslations();
+  calc();
+}
+
+function initLanguage(){
+  captureStaticTexts();
+  const saved=localStorage.getItem(LANG_STORAGE_KEY)||'tr';
+  changeLanguage(saved);
+}
+
+function txt(tr,en){
+  return currentLang==='en'?en:tr;
+}
+
+function categoryName(key,fallback){
+  return UI_TEXT[currentLang]?.categories?.[key]||fallback;
+}
+
+function itemName(key,fallback){
+  return UI_TEXT[currentLang]?.items?.[key]||fallback;
+}
+
+function parseNum(v){
+  if(v==null)return NaN;
+  if(typeof v==='number')return v;
+  const s=String(v).trim();
+  if(!s)return NaN;
+  const cleaned=s.replace(/[^\d.,-]/g,'');
+  if(!cleaned)return NaN;
+  const comma=cleaned.lastIndexOf(','),dot=cleaned.lastIndexOf('.');
+  let normalized=cleaned;
+  if(comma>dot)normalized=cleaned.replace(/\./g,'').replace(',', '.');
+  else if(dot>comma&&comma!==-1)normalized=cleaned.replace(/,/g,'');
+  else if(comma!==-1)normalized=cleaned.replace(',', '.');
+  return parseFloat(normalized);
+}
+
+function tierMeta(i,total){
+  const ratio=total<=1?0:i/(total-1);
+  if(ratio<=0.2)return{cls:'great',label:'Optimal'};
+  if(ratio<=0.4)return{cls:'good',label:'Guvenceli'};
+  if(ratio<=0.65)return{cls:'mid',label:'Orta'};
+  if(ratio<=0.85)return{cls:'poor',label:'Zayif'};
+  return{cls:'bad',label:'Riskli'};
+}
+
+function safeHtml(v){return String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');}
+
+function parseMonths(v){
+  const num=parseNum(v);
+  return Number.isFinite(num)?Math.round(num):null;
+}
+
+function stepDecimals(step){
+  const s=String(step||1);
+  return s.includes('.')?s.split('.')[1].length:0;
+}
+
+function isStepAligned(value,min,step){
+  const precision=Math.max(stepDecimals(step),stepDecimals(min),4);
+  const scaled=Math.round((value-min)*Math.pow(10,precision));
+  const scaledStep=Math.round(step*Math.pow(10,precision));
+  return scaledStep===0?true:scaled%scaledStep===0;
+}
+
+function validateBoundInput(id,value){
+  const range=document.getElementById(id);
+  const warn=document.getElementById(id+'W');
+  if(!range||!warn)return true;
+  const num=parseFloat(value);
+  const min=parseFloat(range.min||0);
+  const max=parseFloat(range.max||0);
+  const step=parseFloat(range.step||1);
+  const valid=Number.isFinite(num)&&num>=min&&num<=max&&isStepAligned(num,min,step);
+  warn.style.display=valid?'none':'block';
+  return valid;
+}
+
+function formatSliderValue(value,decimals=0,suffix=''){
+  return parseFloat(value).toFixed(decimals)+suffix;
+}
+
+function handleRangeInput(id,value,callback,decimals=0,suffix='',labelFormatter=null){
+  const range=document.getElementById(id);
+  const num=document.getElementById(id+'N');
+  const label=document.getElementById(id+'V');
+  if(range)range.value=value;
+  if(num)num.value=value;
+  if(label)label.textContent=labelFormatter?labelFormatter(parseFloat(value)):formatSliderValue(value,decimals,suffix);
+  validateBoundInput(id,value);
+  if(typeof callback==='function')callback();
+}
+
+function handleNumberInput(id,value,callback,decimals=0,suffix='',labelFormatter=null){
+  if(!validateBoundInput(id,value))return;
+  handleRangeInput(id,value,callback,decimals,suffix,labelFormatter);
+}
+
+function setExpenseChartView(type){
+  expenseChartView=type;
+  ['doughnut','bar','polarArea'].forEach(v=>document.getElementById('exp-view-'+v)?.classList.toggle('active',v===type));
+  updatePie(budgetSnapshot.catTotals);
+}
+
+function setReportExpenseView(type){
+  reportExpenseView=type;
+  ['doughnut','bar','radar','polarArea'].forEach(v=>document.getElementById('report-view-'+v)?.classList.toggle('active',v===type));
+  updateReports();
+}
+
+function setReportFXView(type){
+  reportFxView=type;
+  ['line','bar','radar','doughnut'].forEach(v=>document.getElementById('fx-view-'+v)?.classList.toggle('active',v===type));
+  updateReports();
+}
+
+function setReportDebtView(type){
+  reportDebtView=type;
+  ['bar','radar','doughnut','polarArea'].forEach(v=>document.getElementById('debt-view-'+v)?.classList.toggle('active',v===type));
+  updateReports();
+}
+
+function setReportTrendView(type){
+  reportTrendView=type;
+  ['line','bar','radar','doughnut'].forEach(v=>document.getElementById('trend-view-'+v)?.classList.toggle('active',v===type));
+  updateReports();
+}
+
+function syncApiHouseInputs(){
+  const hp=parseFloat(document.getElementById('sim-hp')?.value)||parseFloat(document.getElementById('hp')?.value)||0;
+  const dp=parseFloat(document.getElementById('sim-dp')?.value)||parseFloat(document.getElementById('dp')?.value)||0;
+  const term=parseInt(document.getElementById('sim-t')?.value)||parseInt(document.getElementById('mt')?.value)||120;
+  const loan=Math.max(0,hp-dp);
+  const houseAmount=document.getElementById('api-house-amount');
+  const houseTerm=document.getElementById('api-house-term');
+  if(houseAmount&&loan>0)houseAmount.value=Math.round(loan);
+  if(houseTerm)houseTerm.value=term;
+  const note=document.getElementById('api-sync-note');
+  if(note)note.textContent=`Konut teklif tutari simulatorden esitlendi: ${f(loan||0)} · ${term} ay.`;
+}
+
+function syncApiCarInputs(){
+  const price=parseFloat(document.getElementById('car-price')?.value)||0;
+  const dp=parseFloat(document.getElementById('car-dp')?.value)||0;
+  const term=parseInt(document.getElementById('car-t')?.value)||36;
+  const loan=Math.max(0,price-dp);
+  const carAmount=document.getElementById('api-car-amount');
+  const carTerm=document.getElementById('api-car-term');
+  if(carAmount&&loan>0)carAmount.value=Math.round(loan);
+  if(carTerm)carTerm.value=term;
+}
+
+function syncLinkedPanels(totalInc,grandExp,usd,fx){
+  const curExp=document.getElementById('cur-exp');
+  const curUsd=document.getElementById('cur-usd');
+  const curFx=document.getElementById('cur-fx');
+  const curFxN=document.getElementById('cur-fxN');
+  const curFxV=document.getElementById('cur-fxV');
+  if(curExp)curExp.value=Math.round(grandExp);
+  if(curUsd)curUsd.value=Math.round(usd);
+  if(curFx){
+    curFx.value=fx;
+    if(curFxN)curFxN.value=fx;
+    if(curFxV)curFxV.textContent=parseFloat(fx).toFixed(2);
+  }
+}
+
+async function fetchCollectJson(endpoint,token,params={}){
+  const url=new URL(`${COLLECT_API_BASE}/${endpoint}`);
+  Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
+  const res=await fetch(url.toString(),{
+    method:'GET',
+    headers:{'content-type':'application/json','Authorization':'apikey '+normalizeApiToken(token)}
+  });
+  if(!res.ok)throw new Error(`HTTP ${res.status}`);
+  const data=await res.json();
+  if(!data?.success)throw new Error(data?.message||'API yaniti basarisiz');
+  return Array.isArray(data.result)?data.result:[];
+}
+
+function renderLoanRows(items,mode,targetType){
+  if(!items.length)return '<div class="tip">Sonuc bulunamadi.</div>';
+  return items.map((item,i)=>{
+    const tier=tierMeta(i,items.length);
+    const bank=item.bank||item['bank-code']||'Banka';
+    const product=item.status||item.kredi||item.name||'Kredi teklifi';
+    const rateVal=parseNum(item.oran||item.faiz);
+    const rateText=Number.isFinite(rateVal)?'%'+rateVal.toFixed(2):safeHtml(item.oran||item.faiz||'—');
+    const right=mode==='bid'
+      ? `<div>${safeHtml(item.ay||'—')}</div><div>${safeHtml(item.tl||'—')}</div><div>Faiz: ${rateText}</div>`
+      : `<div>Faiz: ${rateText}</div><div>Vade: ${safeHtml(item.min||'—')} - ${safeHtml(item.max||'—')}</div>`;
+    const action=mode==='bid'
+      ? `<div class="loan-actions"><button class="sub-btn" onclick="applyApiOffer('${targetType}',${i})">Butceye uygula</button></div>`
+      : '';
+    return `<div class="loan-row">
+      <span class="loan-tier ${tier.cls}">${tier.label}</span>
+      <div><div class="loan-bank">${safeHtml(bank)}</div><div class="loan-product">${safeHtml(product)}</div>${action}</div>
+      <div class="loan-meta">${right}</div>
+    </div>`;
+  }).join('');
+}
+
+function sortLoanItems(items){
+  return [...items].sort((a,b)=>{
+    const am=parseNum(a.ay),bm=parseNum(b.ay);
+    const ar=parseNum(a.oran||a.faiz),br=parseNum(b.oran||b.faiz);
+    const av=Number.isFinite(am)?am:Number.isFinite(ar)?ar:Number.POSITIVE_INFINITY;
+    const bv=Number.isFinite(bm)?bm:Number.isFinite(br)?br:Number.POSITIVE_INFINITY;
+    return av-bv;
+  });
+}
+
+function renderCollectBlock(target,metaTarget,title,bidItems,generalItems,amount,term){
+  const box=document.getElementById(target),meta=document.getElementById(metaTarget);
+  if(meta)meta.textContent=`${f(amount)} · ${term} ay`;
+  const topBid=sortLoanItems(bidItems).slice(0,6);
+  const topGeneral=sortLoanItems(generalItems).slice(0,5);
+  const targetType=target.includes('house')?'house':'car';
+  if(topBid.length){
+    box.innerHTML=`${renderLoanRows(topBid,'bid',targetType)}${topGeneral.length?`<div class="api-note"><b>Genel piyasa faizleri</b></div>${renderLoanRows(topGeneral,'general',targetType)}`:''}`;
+    return;
+  }
+  if(topGeneral.length){
+    box.innerHTML=`<div class="tip">${title} icin kisilestirilmis teklif donmedigi icin genel faiz tablosu gosteriliyor.</div>${renderLoanRows(topGeneral,'general',targetType)}`;
+    return;
+  }
+  box.innerHTML='<div class="tip">Bu sorgu icin veri alinamadi.</div>';
+}
+
+function clearOfferIfMismatch(type,currentLoan,currentTerm){
+  const active=selectedOffers[type];
+  if(!active)return;
+  if(Math.abs((active.loan||0)-currentLoan)>10 || (active.term||0)!==currentTerm){
+    selectedOffers[type]=null;
+  }
+}
+
+function applyApiOffer(type,index){
+  const item=(type==='house'?lastLoanResults.houseBid:lastLoanResults.carBid)[index];
+  if(!item)return;
+  const rate=parseNum(item.oran||item.faiz);
+  const monthly=parseNum(item.ay);
+  const total=parseNum(item.tl);
+  const term=type==='house'?(parseInt(document.getElementById('api-house-term').value)||120):(parseInt(document.getElementById('api-car-term').value)||36);
+  const loan=type==='house'?(parseFloat(document.getElementById('api-house-amount').value)||0):(parseFloat(document.getElementById('api-car-amount').value)||0);
+  const label=`${item.bank||item['bank-code']||'Banka'} · ${item.status||item.kredi||'Teklif'}`;
+  selectedOffers[type]={...item,rate,monthly,total,term,loan,label};
+  if(type==='house'){
+    if(Number.isFinite(rate)){
+      handleRangeInput('mr', rate.toFixed(1), null, 1, '%');
+      handleRangeInput('sim-r', rate.toFixed(1), null, 1, '%');
+    }
+    handleRangeInput('mt', term, null, 0, ' ay', v=>v+' ay ('+Math.round(v/12)+' yıl)');
+    handleRangeInput('sim-t', term, null, 0, ' ay', v=>v+' ay');
+    calcMort();
+    simCalc();
+  }else{
+    if(Number.isFinite(rate))handleRangeInput('car-r', rate.toFixed(1), null, 1, '%');
+    handleRangeInput('car-t', term, null, 0, ' ay', v=>v+' ay');
+    calcCar();
+  }
+}
+
+async function fetchCollectRates(){
+  const token=resolveApiToken();
+  const btn=document.getElementById('api-fetch-btn');
+  const status=document.getElementById('api-status');
+  const houseAmount=parseFloat(document.getElementById('api-house-amount').value)||0;
+  const houseTerm=parseInt(document.getElementById('api-house-term').value)||0;
+  const carAmount=parseFloat(document.getElementById('api-car-amount').value)||0;
+  const carTerm=parseInt(document.getElementById('api-car-term').value)||0;
+  if(!token){
+    status.textContent='CollectAPI token gerekli. Proje icine COLLECT_API_TOKEN degeri koyabilir veya alttaki inputu kullanabilirsiniz.';
+    return;
+  }
+  if(houseAmount<=0||houseTerm<=0||carAmount<=0||carTerm<=0){
+    status.textContent='Konut ve tasit icin gecerli tutar ve vade girin.';
+    return;
+  }
+  btn.disabled=true;
+  status.textContent='CollectAPI teklifleri cekiliyor...';
+  document.getElementById('api-house-results').innerHTML='<div class="tip">Konut teklifleri yukleniyor...</div>';
+  document.getElementById('api-car-results').innerHTML='<div class="tip">Tasit teklifleri yukleniyor...</div>';
+  try{
+    const bundles=await Promise.all([
+      (async()=>{
+        const [bid,general]=await Promise.allSettled([
+          fetchCollectJson('creditBid',token,{'data.query':'konut','data.month':houseTerm,'data.price':houseAmount}),
+          fetchCollectJson('konutKredi',token)
+        ]);
+        return {
+          bid:bid.status==='fulfilled'?bid.value:[],
+          general:general.status==='fulfilled'?general.value:[],
+          bidErr:bid.status==='rejected'?bid.reason:null,
+          genErr:general.status==='rejected'?general.reason:null
+        };
+      })(),
+      (async()=>{
+        const [bid,general]=await Promise.allSettled([
+          fetchCollectJson('creditBid',token,{'data.query':'tasit','data.month':carTerm,'data.price':carAmount}),
+          fetchCollectJson('tasitKredi',token)
+        ]);
+        return {
+          bid:bid.status==='fulfilled'?bid.value:[],
+          general:general.status==='fulfilled'?general.value:[],
+          bidErr:bid.status==='rejected'?bid.reason:null,
+          genErr:general.status==='rejected'?general.reason:null
+        };
+      })()
+    ]);
+    lastLoanResults.houseBid=sortLoanItems(bundles[0].bid).slice(0,6);
+    lastLoanResults.carBid=sortLoanItems(bundles[1].bid).slice(0,6);
+    lastLoanResults.houseGeneral=sortLoanItems(bundles[0].general).slice(0,5);
+    lastLoanResults.carGeneral=sortLoanItems(bundles[1].general).slice(0,5);
+    renderCollectBlock('api-house-results','api-house-meta','Konut',bundles[0].bid,bundles[0].general,houseAmount,houseTerm);
+    renderCollectBlock('api-car-results','api-car-meta','Tasit',bundles[1].bid,bundles[1].general,carAmount,carTerm);
+    const warnings=[
+      bundles[0].bidErr?'konut teklif detayi alinamadi':'',
+      bundles[1].bidErr?'tasit teklif detayi alinamadi':'',
+      bundles[0].genErr?'konut genel faiz listesi alinamadi':'',
+      bundles[1].genErr?'tasit genel faiz listesi alinamadi':''
+    ].filter(Boolean);
+    status.textContent=warnings.length
+      ? `Sorgu tamamlandi. Bazi kisimlarda fallback kullanildi: ${warnings.join(', ')}.`
+      : 'Sorgu tamamlandi. Sonuclar en dusuk maliyetten en pahaliya dogru yesilden kirmiziya siralandi.';
+  }catch(err){
+    status.textContent='CollectAPI sorgusu basarisiz oldu: '+(err?.message||err);
+    document.getElementById('api-house-results').innerHTML='<div class="tip">Konut verileri alinamadi.</div>';
+    document.getElementById('api-car-results').innerHTML='<div class="tip">Tasit verileri alinamadi.</div>';
+  }finally{
+    btn.disabled=false;
+  }
+}
+
+function buildCats(){
+  const el=document.getElementById('exp-cats');el.innerHTML='';
+  CATS.forEach(cat=>{
+    const catItems=[...cat.items,...(extraItemsByCat[cat.key]||[])];
+    const isOpen=openCats[cat.key]!==false;
+    const div=document.createElement('div');
+    div.innerHTML=`<div class="cat-hdr" onclick="toggleCat('${cat.key}')">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="width:8px;height:8px;border-radius:2px;background:${cat.color};display:inline-block;flex-shrink:0;"></span>
+        <span class="cat-name">${categoryName(cat.key,cat.name)}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span style="font-size:13px;font-weight:500;color:var(--color-text-secondary);" id="ctot-${cat.key}">₺0</span>
+        <span style="font-size:10px;color:var(--color-text-tertiary);transition:transform .2s;" id="carr-${cat.key}" style="transform:${isOpen?'rotate(90deg)':''}">▶</span>
+      </div>
+    </div>
+    <div id="cbody-${cat.key}" class="cat-body" style="display:${isOpen?'block':'none'}">
+      ${catItems.filter(it=>!it.fixed).map(it=>`<div class="sub-item">
+        <span class="sub-nm">${itemName(it.k,it.n)}</span>
+        <input type="range" min="0" max="${it.max||8000}" step="100" value="${it.v}" id="r_${it.k}" style="flex:1;" oninput="handleExpenseRange('${it.k}', this.value)">
+        <input type="number" min="0" max="${it.max||8000}" step="100" value="${it.v}" id="n_${it.k}" style="width:96px;" oninput="handleExpenseNumber('${it.k}', this.value)">
+        <span class="sub-val" id="v_${it.k}">${f(it.v)}</span>
+        ${(it.custom&&cat.key==='other')?`<button class="danger-btn" onclick="removeCustomExpenseItem('${cat.key}','${it.k}')">${txt('Sil','Delete')}</button>`:''}
+        <div class="input-warn" id="w_${it.k}" style="flex-basis:100%;margin-left:163px;">0 ile ${f(it.max||8000)} arasında, 100 artışlarla girin.</div>
+      </div>`).join('')}
+      ${cat.key==='other'?`<div class="add-row">
+        <input type="text" id="new-other-name" placeholder="${txt('Yeni duzenli gider adi','New recurring expense name')}">
+        <input type="number" id="new-other-value" min="0" step="100" value="1000" style="width:110px;">
+        <button class="sub-btn" onclick="addCustomExpenseItem('other')">${txt('Ekle','Add')}</button>
+      </div><div class="helper">${txt('Sadece genel ve tekrar eden aylik giderler ekleyin.','Only add general recurring monthly expenses.')}</div>`:''}
+    </div>`;
+    el.appendChild(div);
+  });
+}
+
+function toggleCat(key){
+  const b=document.getElementById('cbody-'+key),a=document.getElementById('carr-'+key);
+  const open=b.style.display!=='none';
+  b.style.display=open?'none':'block';
+  a.style.transform=open?'rotate(0deg)':'rotate(90deg)';
+  openCats[key]=!open;
+}
+
+function gv(k){const e=document.getElementById('r_'+k);return e?parseFloat(e.value)||0:0;}
+function getFX(){return parseFloat(document.getElementById('fx').value)||43.5;}
+
+function handleExpenseRange(key,value){
+  document.getElementById('r_'+key).value=value;
+  const n=document.getElementById('n_'+key);
+  if(n)n.value=value;
+  document.getElementById('v_'+key).textContent=f(value);
+  const warn=document.getElementById('w_'+key);
+  if(warn)warn.style.display='none';
+  calc();
+}
+
+function handleExpenseNumber(key,value){
+  const range=document.getElementById('r_'+key);
+  const warn=document.getElementById('w_'+key);
+  const num=parseFloat(value);
+  const min=parseFloat(range.min||0),max=parseFloat(range.max||0),step=parseFloat(range.step||100);
+  const valid=Number.isFinite(num)&&num>=min&&num<=max&&isStepAligned(num,min,step);
+  if(warn)warn.style.display=valid?'none':'block';
+  if(!valid)return;
+  handleExpenseRange(key,value);
+}
+
+function addCustomExpenseItem(catKey){
+  const nameEl=document.getElementById('new-'+catKey+'-name');
+  const valEl=document.getElementById('new-'+catKey+'-value');
+  const name=(nameEl?.value||'').trim();
+  const value=parseFloat(valEl?.value)||0;
+  if(!name||value<0)return;
+  const id=`${catKey}_custom_${Date.now()}`;
+  if(!extraItemsByCat[catKey])extraItemsByCat[catKey]=[];
+  extraItemsByCat[catKey].push({k:id,n:name,v:value,max:Math.max(5000,Math.ceil(value/100)*300),custom:true});
+  nameEl.value='';
+  valEl.value='1000';
+  openCats[catKey]=true;
+  buildCats();
+  calc();
+}
+
+function removeCustomExpenseItem(catKey,itemKey){
+  extraItemsByCat[catKey]=(extraItemsByCat[catKey]||[]).filter(it=>it.k!==itemKey);
+  buildCats();
+  calc();
+}
+
+function setAllCategories(open){
+  CATS.forEach(cat=>{openCats[cat.key]=open;});
+  buildCats();
+  calc();
+}
+
+function applyDeepTranslations(){
+  const map=currentLang==='en'?{
+    '#pane-budget .helper':'The selected home offer can automatically write its rate and monthly payment into this card.',
+    '#pane-budget .card:nth-of-type(3) .helper':'This payment is automatically included in the Transport & Vehicle category and total monthly expenses.',
+    '#pane-budget .card:last-child .helper':'This section stays in its own right column. You can use both the slider and direct numeric input for each item.',
+    '#pane-currency .card:first-child > div[style*="font-size:13px"]':'Optimized for the downside TRY scenario: as TRY weakens, converting less can be an advantage.',
+    '#split-note':'Convert only what you need into TRY for expenses and keep the rest in USD/EUR.',
+    '#pane-currency .card:nth-of-type(2) .tip':'<b>How to read this:</b> If USD/TRY rises from 43.5 to 55, you need to convert much less USD to cover the same TRY expenses. That is why the downside scenario can actually improve your financial position as a USD earner, provided you keep a shock buffer.',
+    '#pane-currency .card:nth-of-type(3) .warn-box':'<b>For single-income households:</b> If income stops or is interrupted, you have no second income buffer. That means your emergency fund should cover at least 9-12 months of expenses.',
+    '#pane-currency .card:nth-of-type(3) .tip':'<b>Currency mix suggestion:</b> Keep 60-70% of your emergency fund in USD/EUR and the rest in TRY deposits or gold. Too much TRY gets eroded by inflation; too much USD can create friction for urgent TRY spending.',
+    '#pane-currency .card:nth-of-type(4) .tip':'<b>If FX falls (TRY strengthens):</b> your TRY income falls and that is the main real risk. <b>If FX rises:</b> your income increases and your expenses become cheaper in USD terms. The risk is asymmetric.',
+    '#pane-projection .sc-main .sc-title':'⚡ YOUR MAIN CASE - Bearish TRY scenario',
+    '#pane-projection .sc-main .sc-rate':'30-40% yearly FX increase',
+    '#pane-projection .sc-main .sc-desc':'USD/TRY may rise into the 90-120 range by 2031. While TRY expenses rise, your USD income absorbs much of that move. The main short-term risk is a temporary FX pullback.',
+    '#pane-projection .sc-opt .sc-title':'Optimistic scenario',
+    '#pane-projection .sc-opt .sc-rate':'10-12% yearly',
+    '#pane-projection .sc-opt .sc-desc':'If policy stays disciplined and inflation cools toward 10%, TRY may stabilize relative to recent years.',
+    '#pane-projection .sc-mid .sc-title':'Base scenario',
+    '#pane-projection .sc-mid .sc-rate':'18-22% yearly',
+    '#pane-projection .sc-mid .sc-desc':'The current trend continues. Inflation settles around 20-25% and FX keeps rising gradually.',
+    '#pane-projection .card:nth-of-type(2) .tip':'<b>The downside paradox:</b> The more TRY weakens, the cheaper your fixed TRY installment becomes in USD terms. Over five years, a home payment can shrink dramatically in USD cost.',
+    '#pane-projection .card:nth-of-type(3) .tip':'<b>When partner income starts:</b> even under the bearish scenario, extra USD income creates major breathing room. Every extra $500 adds meaningful TRY capacity at today’s FX.',
+    '#pane-mortgage .card:nth-of-type(2) .tip:nth-of-type(1)':'<b>1. Prefer longer maturities (15-20 years):</b> as TRY weakens, later installments become dramatically cheaper in USD terms.',
+    '#pane-mortgage .card:nth-of-type(2) .tip:nth-of-type(2)':'<b>2. Keep the down payment moderate:</b> excess cash may work harder in USD savings or investments than it does as early debt reduction.',
+    '#pane-mortgage .card:nth-of-type(2) .tip:nth-of-type(3)':'<b>3. Fixed-rate TRY debt:</b> avoid FX-linked or variable-rate structures. Fixed TRY installments are the most predictable.',
+    '#pane-mortgage .card:nth-of-type(2) .tip:nth-of-type(4)':'<b>4. Do not rush early repayment:</b> if TRY keeps weakening, the real burden of the debt naturally falls over time.',
+    '#pane-mortgage .card:nth-of-type(2) .tip:nth-of-type(5)':'<b>5. Single-income buffer is mandatory:</b> installment plus living costs should still leave enough monthly breathing room.',
+    '#pane-mortgage .card:nth-of-type(2) .tip:nth-of-type(6)':'<b>6. Wait for lower rates?</b> if monthly mortgage rates fall meaningfully, total long-term savings can be very large.',
+    '#pane-mortgage .card:last-child .helper':'The apply-to-budget button writes the selected offer’s rate, term, and monthly payment into the main home or vehicle finance cards.',
+    '#pane-risk .unlock-box > div':'Once your partner starts earning, overall risk drops significantly. This is one of the strongest medium-term arguments in favor of buying a home.',
+  }:{};
+  Object.entries(map).forEach(([selector,val])=>{const el=document.querySelector(selector); if(el) el.innerHTML=val;});
+}
+
+function fxChange(v){
+  document.getElementById('fxV').textContent=parseFloat(v).toFixed(2);
+  const fxN=document.getElementById('fxN');if(fxN)fxN.value=v;
+  calc();
+}
+
+function calcMort(){
+  const hp=parseFloat(document.getElementById('hp').value)||0;
+  const dp=parseFloat(document.getElementById('dp').value)||0;
+  const r=parseFloat(document.getElementById('mr').value)/100;
+  const n=parseInt(document.getElementById('mt').value);
+  const mtN=document.getElementById('mtN');if(mtN)mtN.value=n;
+  const loan=Math.max(0,hp-dp);
+  clearOfferIfMismatch('house',loan,n);
+  if(loan<=0){mortPay=0;document.getElementById('mort-pay').textContent='₺0';document.getElementById('mort-det').textContent=txt('Peşinat evi karşılıyor.','The down payment fully covers the home.');document.getElementById('mort-usd-cost').textContent='';calc();return;}
+  const amortized=loan*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+  mortPay=selectedOffers.house?.monthly||amortized;
+  const fx=getFX();
+  document.getElementById('mort-pay').textContent=f(mortPay);
+  const totalPay=selectedOffers.house?.total||mortPay*n;
+  document.getElementById('mort-det').textContent=`${txt('Kredi','Loan')}: ${f(loan)} · ${txt('Toplam','Total')}: ${f(totalPay)} · ${txt('Faiz yükü','Interest burden')}: ${f(totalPay-loan)}`;
+  document.getElementById('mort-usd-cost').textContent=`${txt('Bugünkü kurda','At today’s FX')}: ${fd(mortPay/fx)}/ay`;
+  document.getElementById('mort-source').textContent=selectedOffers.house?`${txt('Secili teklif','Selected offer')}: ${selectedOffers.house.label}`:txt('Elle girilen kredi varsayimi kullaniliyor.','Using manual mortgage assumptions.');
+  calc();
+}
+
+function calcCar(){
+  const price=parseFloat(document.getElementById('car-price').value)||0;
+  const dp=parseFloat(document.getElementById('car-dp').value)||0;
+  const r=parseFloat(document.getElementById('car-r').value)/100;
+  const n=parseInt(document.getElementById('car-t').value);
+  const carTN=document.getElementById('car-tN');if(carTN)carTN.value=n;
+  const loan=Math.max(0,price-dp);
+  clearOfferIfMismatch('car',loan,n);
+  if(loan<=0){carPay=0;document.getElementById('car-pay').textContent='₺0';document.getElementById('car-det').textContent=txt('Peşinat araci karşılıyor.','The down payment fully covers the vehicle.');document.getElementById('car-usd-cost').textContent='';document.getElementById('car-source').textContent=txt('Araç peşinatla aliniyor.','Vehicle is being purchased without financing.');syncApiCarInputs();calc();return;}
+  const amortized=loan*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+  carPay=selectedOffers.car?.monthly||amortized;
+  const totalPay=selectedOffers.car?.total||carPay*n;
+  const fx=getFX();
+  document.getElementById('car-pay').textContent=f(carPay);
+  document.getElementById('car-det').textContent=`${txt('Kredi','Loan')}: ${f(loan)} · ${txt('Toplam','Total')}: ${f(totalPay)} · ${txt('Faiz yükü','Interest burden')}: ${f(totalPay-loan)}`;
+  document.getElementById('car-usd-cost').textContent=`${txt('Bugünkü kurda','At today’s FX')}: ${fd(carPay/fx)}/ay`;
+  document.getElementById('car-source').textContent=selectedOffers.car?`${txt('Secili teklif','Selected offer')}: ${selectedOffers.car.label}`:txt('Elle girilen taşıt kredisi varsayimi kullaniliyor.','Using manual vehicle-loan assumptions.');
+  syncApiCarInputs();
+  calc();
+}
+
+function calc(){
+  const fx=getFX();
+  const usd=(parseFloat(document.getElementById('usd1').value)||0)+(parseFloat(document.getElementById('usd2').value)||0)+(parseFloat(document.getElementById('usd2fut').value)||0);
+  const tryExt=parseFloat(document.getElementById('try-ext').value)||0;
+  const totalInc=usd*fx+tryExt;
+
+  document.getElementById('inc-breakdown').innerHTML=`<b>${fd(usd)}</b> × ₺${fx.toFixed(2)} = <b>${f(usd*fx)}</b>${tryExt>0?` + ${f(tryExt)} ${txt('TRY ek gelir','extra TRY income')}`:''}`;
+
+  let catTotals={};let grandExp=0;
+  CATS.forEach(cat=>{
+    let t=cat.key==='housing'?mortPay:cat.key==='transport'?carPay:0;
+    cat.items.filter(it=>!it.fixed).forEach(it=>t+=gv(it.k));
+    catTotals[cat.key]=t;grandExp+=t;
+    const el=document.getElementById('ctot-'+cat.key);
+    if(el)el.textContent=f(t);
+  });
+
+  const bal=totalInc-grandExp;
+  const savR=totalInc>0?bal/totalInc*100:0;
+  const creditLoad=mortPay+carPay;
+  const mRat=totalInc>0?creditLoad/totalInc*100:0;
+  const tRat=totalInc>0?grandExp/totalInc*100:0;
+
+  document.getElementById('c-inc').textContent=f(totalInc);
+  document.getElementById('c-usd-sub').textContent=fd(usd)+' / ay';
+  document.getElementById('c-exp').textContent=f(grandExp);
+  const bEl=document.getElementById('c-bal');bEl.textContent=f(bal);bEl.className='mval '+(bal>=0?'g':'r');
+  document.getElementById('c-bal-usd').textContent=fd(bal/fx)+' / ay';
+  const sEl=document.getElementById('c-sav');sEl.textContent=fp(savR);sEl.className='mval '+(savR>=20?'g':savR>=10?'a':'r');
+  syncLinkedPanels(totalInc,grandExp,usd,fx);
+  budgetSnapshot={catTotals,totalInc,grandExp,bal,savR,creditLoad,fx,usd,mortPay,carPay};
+
+  document.getElementById('r1').textContent=fp(mRat);
+  document.getElementById('r2').textContent=fp(tRat);
+  document.getElementById('r3').textContent=fp(Math.max(0,savR));
+  document.getElementById('p1').style.cssText=`width:${cl(mRat*2.5,0,100)}%;background:${mRat<=40?'#378ADD':mRat<=50?'#EF9F27':'#E24B4A'}`;
+  document.getElementById('p2').style.cssText=`width:${cl(tRat*1.25,0,100)}%;background:${tRat<=80?'#1D9E75':tRat<=90?'#EF9F27':'#E24B4A'}`;
+  document.getElementById('p3').style.cssText=`width:${cl(Math.max(0,savR)*5,0,100)}%;background:${savR>=20?'#639922':savR>=10?'#EF9F27':'#E24B4A'}`;
+
+  const r=parseFloat(document.getElementById('mr').value)/100,n=parseInt(document.getElementById('mt').value);
+  const maxLoan=totalInc>0?totalInc*0.4/(r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1)):0;
+  document.getElementById('s1').textContent=f(totalInc);
+  document.getElementById('s2').textContent=f(mortPay);
+  document.getElementById('s2b').textContent=f(carPay);
+  document.getElementById('s3').textContent=f(grandExp-mortPay-carPay);
+  document.getElementById('s4').innerHTML=`<span style="color:${bal>=0?'var(--color-text-success)':'var(--color-text-danger)'}">${f(bal)}</span>`;
+  document.getElementById('s5').textContent=f(Math.max(0,maxLoan));
+  const houseNote=selectedOffers.house?`${txt('Konut','Home')}: ${selectedOffers.house.label} · ${f(mortPay)}/ay`:txt('Konut teklifi secilmedi.','No home offer selected.');
+  const carNote=selectedOffers.car?`${txt('Tasit','Vehicle')}: ${selectedOffers.car.label} · ${f(carPay)}/ay`:txt('Tasit teklifi secilmedi.','No vehicle offer selected.');
+  document.getElementById('house-selected-note').textContent=houseNote;
+  document.getElementById('car-selected-note').textContent=carNote;
+  const reportHouse=document.getElementById('report-house-selected-note');
+  const reportCar=document.getElementById('report-car-selected-note');
+  if(reportHouse)reportHouse.textContent=houseNote;
+  if(reportCar)reportCar.textContent=carNote;
+
+  const ab=document.getElementById('afford-box');
+  if(mRat<=35&&tRat<=75&&bal>0){ab.className='afford ok';ab.innerHTML=`<div class="afford-t">${txt('Bütçe sağlıklı','Budget looks healthy')}</div>${txt('Oranlar güvenli aralıkta. USD geliriniz enflasyona karşı doğal koruma sağlıyor.','The ratios are within a safe band. Your USD income provides natural protection against inflation.')}`;}
+  else if(mRat<=45&&tRat<=88&&bal>0){ab.className='afford warn';ab.innerHTML=`<div class="afford-t">${txt('Dikkatli planlama gerekli','Careful planning needed')}</div>${txt('Tek gelirli profilde bu yük yüksek. 9+ aylık acil fon tampon zorunlu.','For a single-income profile this load is elevated. A 9+ month emergency buffer is strongly recommended.')}`;}
+  else{ab.className='afford bad';ab.innerHTML=`<div class="afford-t">${txt('Risk yüksek — tek gelirli hane','High risk - single-income household')}</div>${txt('Eş geliri başlayana kadar bu koşullarda ev almak önerilmez.','Buying under these conditions is not recommended until second income starts.')}`;}
+
+  updatePie(catTotals);
+  updateReports();
+}
+
+function updatePie(catTotals){
+  const labels=[],data=[],colors=[];
+  CATS.forEach(cat=>{const v=catTotals[cat.key];if(v>0){labels.push(cat.name);data.push(Math.round(v));colors.push(cat.color);}});
+  const canvas=document.getElementById('pieChart');
+  canvas.width=240;canvas.height=160;
+  if(pieChart)pieChart.destroy();
+  pieChart=new Chart(canvas,{type:expenseChartView,data:{labels,datasets:[{label:'Aylik gider',data,backgroundColor:colors,borderWidth:1,borderColor:'rgba(255,255,255,0.15)'}]},options:{responsive:false,indexAxis:expenseChartView==='bar'?'y':'x',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.label+': ₺'+ctx.raw.toLocaleString('tr-TR')}}},scales:expenseChartView==='bar'?{x:{ticks:{callback:v=>'₺'+Math.round(v/1000)+'K'}}}:{}}})
+  const leg=document.getElementById('pie-leg');leg.innerHTML='';
+  labels.forEach((l,i)=>{const s=document.createElement('span');s.innerHTML=`<span class="dot" style="background:${colors[i]}"></span>${l}`;leg.appendChild(s);});
+}
+
+function updateReports(){
+  const snap=budgetSnapshot;
+  if(!document.getElementById('rep-inc'))return;
+  document.getElementById('rep-inc').textContent=f(snap.totalInc||0);
+  document.getElementById('rep-exp').textContent=f(snap.grandExp||0);
+  const repBal=document.getElementById('rep-bal');
+  repBal.textContent=f(snap.bal||0);
+  repBal.className='mval '+((snap.bal||0)>=0?'g':'r');
+  document.getElementById('rep-credit').textContent=fp(snap.totalInc>0?(snap.creditLoad/snap.totalInc*100):0);
+  document.getElementById('rep-save').textContent=fp(snap.savR||0);
+
+  const labels=[],values=[],colors=[];
+  CATS.forEach(cat=>{const v=snap.catTotals?.[cat.key]||0;if(v>0){labels.push(cat.name);values.push(Math.round(v));colors.push(cat.color);}});
+
+  const expCanvas=document.getElementById('reportExpenseChart');
+  if(reportCharts.expense)reportCharts.expense.destroy();
+  reportCharts.expense=new Chart(expCanvas,{type:reportExpenseView,data:{labels,datasets:[{label:'Aylik gider',data:values,backgroundColor:colors,borderColor:colors,borderWidth:1,fill:reportExpenseView==='radar'}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:reportExpenseView==='bar'?'y':'x',plugins:{legend:{display:reportExpenseView==='doughnut'},tooltip:{callbacks:{label:ctx=>' '+ctx.label+': '+f(ctx.raw)}}},scales:reportExpenseView==='bar'?{x:{ticks:{callback:v=>'₺'+Math.round(v/1000)+'K'}}}:reportExpenseView==='radar'?{r:{ticks:{display:true}}}:{}}});
+
+  const fxVals=[35,40,43.5,50,55,60,65,70];
+  const incomeData=fxVals.map(r=>Math.round((snap.usd||0)*r + (parseFloat(document.getElementById('try-ext').value)||0)));
+  const expenseBase=snap.grandExp||0;
+  const expenseData=fxVals.map((r,i)=>Math.round(expenseBase*(1+(r-43.5)/43.5*0.18)));
+  const balData=incomeData.map((inc,i)=>inc-expenseData[i]);
+  if(reportCharts.fx)reportCharts.fx.destroy();
+  if(reportFxView==='doughnut'){
+    const currentIncome=incomeData[2],currentExpense=expenseData[2],currentNet=Math.max(0,balData[2]);
+    reportCharts.fx=new Chart(document.getElementById('reportFXChart'),{type:'doughnut',data:{labels:[txt('Gelir','Income'),txt('Gider','Expense'),txt('Pozitif net','Positive net')],datasets:[{data:[currentIncome,currentExpense,currentNet],backgroundColor:['#7eb7ee','#f0c366','#86d98d'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true}}}});
+  }else{
+    reportCharts.fx=new Chart(document.getElementById('reportFXChart'),{type:reportFxView,data:{labels:fxVals.map(v=>'₺'+v),datasets:[{label:txt('Gelir','Income'),data:incomeData,borderColor:'#7eb7ee',backgroundColor:'rgba(126,183,238,0.08)',tension:0.28,fill:reportFxView!=='bar'},{label:txt('Gider','Expense'),data:expenseData,borderColor:'#f0c366',backgroundColor:'transparent',tension:0.28,borderDash:[5,4]},{label:txt('Net','Net'),data:balData,borderColor:'#86d98d',backgroundColor:'transparent',tension:0.28}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:reportFxView==='radar'},tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': '+f(ctx.raw)}}},scales:reportFxView==='radar'?{r:{ticks:{display:true}}}:{y:{ticks:{callback:v=>'₺'+Math.round(v/1000)+'K'}}}}});
+  }
+
+  if(reportCharts.debt)reportCharts.debt.destroy();
+  reportCharts.debt=new Chart(document.getElementById('reportDebtChart'),{type:reportDebtView,data:{labels:[txt('Konut taksiti','Home payment'),txt('Arac taksiti','Vehicle payment'),txt('Diger giderler','Other expenses')],datasets:[{data:[Math.round(snap.mortPay||0),Math.round(snap.carPay||0),Math.max(0,Math.round((snap.grandExp||0)-(snap.mortPay||0)-(snap.carPay||0)))],backgroundColor:['#378ADD','#D85A30','#639922'],borderColor:['#378ADD','#D85A30','#639922'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:reportDebtView==='bar'?'y':'x',plugins:{legend:{display:reportDebtView!=='bar'},tooltip:{callbacks:{label:ctx=>' '+f(ctx.raw)}}},scales:reportDebtView==='bar'?{x:{ticks:{callback:v=>'₺'+Math.round(v/1000)+'K'}}}:reportDebtView==='radar'?{r:{ticks:{display:true}}}:{}}});
+
+  const months=['1','2','3','4','5','6','7','8','9','10','11','12'];
+  const trendIncome=months.map((_,i)=>Math.round((snap.totalInc||0)*Math.pow(1.02,i)));
+  const trendExpense=months.map((_,i)=>Math.round((snap.grandExp||0)*Math.pow(1.025,i)));
+  const trendBalance=trendIncome.map((v,i)=>v-trendExpense[i]);
+  if(reportCharts.trend)reportCharts.trend.destroy();
+  if(reportTrendView==='doughnut'){
+    reportCharts.trend=new Chart(document.getElementById('reportTrendChart'),{type:'doughnut',data:{labels:[txt('Yillik gelir toplami','Annual income total'),txt('Yillik gider toplami','Annual expense total'),txt('Yil sonu net','Year-end net')],datasets:[{data:[trendIncome.reduce((a,b)=>a+b,0),trendExpense.reduce((a,b)=>a+b,0),Math.max(0,trendBalance[11]||0)],backgroundColor:['#7eb7ee','#f18b8b','#86d98d'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true}}}});
+  }else{
+    reportCharts.trend=new Chart(document.getElementById('reportTrendChart'),{type:reportTrendView,data:{labels:months,datasets:[{label:txt('Gelir','Income'),data:trendIncome,borderColor:'#7eb7ee',backgroundColor:'rgba(126,183,238,0.07)',fill:reportTrendView!=='bar',tension:0.25},{label:txt('Gider','Expense'),data:trendExpense,borderColor:'#f18b8b',backgroundColor:'transparent',tension:0.25},{label:txt('Net','Net'),data:trendBalance,borderColor:'#86d98d',backgroundColor:'transparent',tension:0.25}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:reportTrendView==='radar'}},scales:reportTrendView==='radar'?{r:{ticks:{display:true}}}:{y:{ticks:{callback:v=>'₺'+Math.round(v/1000)+'K'}}}}});
+  }
+
+  const topCategory=labels.length?labels[values.indexOf(Math.max(...values))]:'—';
+  const reportSummary=document.getElementById('report-summary');
+  reportSummary.innerHTML=`
+    <div class="cards3" style="margin-bottom:10px;">
+      <div class="mcard"><div class="mlbl">${txt('En buyuk gider kalemi','Largest expense category')}</div><div class="mval">${safeHtml(topCategory)}</div><div class="msub">${values.length?f(Math.max(...values)):'₺0'}</div></div>
+      <div class="mcard"><div class="mlbl">${txt('Toplam kredi yuku','Total debt load')}</div><div class="mval">${f((snap.creditLoad||0))}</div><div class="msub">${fp(snap.totalInc>0?(snap.creditLoad/snap.totalInc*100):0)} ${txt('gelir orani','of income')}</div></div>
+      <div class="mcard"><div class="mlbl">${txt('12 ay sonraki tahmini net','Estimated net in 12 months')}</div><div class="mval ${(trendBalance[11]||0)>=0?'g':'r'}">${f(trendBalance[11]||0)}</div><div class="msub">${txt('Gelir %2, gider %2.5 varsayimi','Assumes income +2%, expenses +2.5%')}</div></div>
+    </div>
+    <div class="tip"><b>${txt('Okuma onerisi','How to read it')}:</b> ${txt('Bar ve radar gorunumleri hangi kategorilerin butceyi tasidigini, kur hassasiyet grafigi ise gelirinizin TRY dalgalanmasina ne kadar acik oldugunu gosterir. Borc raporu, konut ve aracin toplam sabit yukunuzu ne kadar artirdigini tek bakista gormenizi saglar.','Bar and radar views show which categories carry the budget, while the FX sensitivity chart shows how exposed your income is to TRY movement. The debt report helps you see at a glance how much fixed load is created by home and vehicle costs.')}</div>`;
+}
+
+function applyWelcomeTemplate(){
+  const usd1=parseFloat(document.getElementById('tpl-usd1').value)||2500;
+  const usd2=parseFloat(document.getElementById('tpl-usd2').value)||0;
+  const home=document.getElementById('tpl-home').value;
+  const car=document.getElementById('tpl-car').value;
+  const style=document.getElementById('tpl-style').value;
+  const household=document.getElementById('tpl-household').value;
+  const mult=style==='lean'?0.85:style==='comfortable'?1.18:1;
+  const hh=household==='single'?0.82:household==='family'?1.25:1;
+  document.getElementById('usd1').value=usd1;
+  document.getElementById('usd2').value=usd2;
+  const baseMap={
+    produce:2500,meat:3500,dry:1800,cleaning:1200,personal:800,
+    rest:2500,cafe:1200,worklunch:1000,elec:2500,gas:2000,water:600,
+    fuel:3500,kasko:1500,traffic:600,service:600,carrepair:700,parking:300,
+    insurance:4500,doctor:500,meds:400,dental:300,lab:200,internet:600,phone1:700,phone2:700,phone_hw:300,
+    netflix:400,spotify:250,cloud:150,gaming:300,sw:500,othersub:200,clothing:2500,entertainment:800,sports:600,travel:1500,gifts:500,
+    emerg:5000,invest:3000,othersav:1000,pocket:1200,familysupport:1000,cleanhelp:1200,education:1500,pet:800,membership:400,online:1200
+  };
+  Object.entries(baseMap).forEach(([k,v])=>{
+    const scaled=Math.round((v*mult*hh)/100)*100;
+    if(document.getElementById('r_'+k))handleExpenseRange(k,scaled);
+  });
+  if(home==='cash'||home==='later'){
+    document.getElementById('dp').value=home==='cash'?5000000:1500000;
+    calcMort();
+  }
+  if(car==='none'){
+    document.getElementById('car-price').value=0;
+    document.getElementById('car-dp').value=0;
+  }else if(car==='cash'){
+    document.getElementById('car-price').value=1600000;
+    document.getElementById('car-dp').value=1600000;
+  }else{
+    document.getElementById('car-price').value=1600000;
+    document.getElementById('car-dp').value=400000;
+  }
+  calcCar();
+  calc();
+  document.getElementById('tpl-status').textContent='Taslak uygulandi. Tum alanlar simdi duzenlenebilir.';
+}
+
+function curCalc(){
+  const exp=parseFloat(document.getElementById('cur-exp').value)||80000;
+  const fx=parseFloat(document.getElementById('cur-fx').value)||43.5;
+  const usd=parseFloat(document.getElementById('cur-usd').value)||2500;
+  const totalTRY=usd*fx;
+  const minConvert=exp/totalTRY*100;
+  const holdPct=Math.max(0,100-minConvert);
+  const holdUSD=usd*holdPct/100;
+  const convertUSD=usd-holdUSD;
+  document.getElementById('split-try-bar').style.width=cl(minConvert,5,95)+'%';
+  document.getElementById('split-try-bar').textContent=`TRY %${Math.round(minConvert)}`;
+  document.getElementById('split-usd-bar').style.width=cl(holdPct,5,95)+'%';
+  document.getElementById('split-usd-bar').textContent=`USD %${Math.round(holdPct)}`;
+  document.getElementById('split-note').textContent=txt(`Giderinizi karşılamak için ${fd(convertUSD)} TRY'ye çevirin. ${fd(holdUSD)} USD/EUR'da tutun.`,`Convert ${fd(convertUSD)} to TRY to cover expenses. Keep ${fd(holdUSD)} in USD/EUR as buffer.`);
+  document.getElementById('cur-result').innerHTML=`
+    <div class="cards3" style="margin-bottom:0;">
+      <div class="mcard"><div class="mlbl">${txt("TRY'ye çevrilecek","Convert to TRY")}</div><div class="mval">${fd(convertUSD)}</div><div class="msub">= ${f(convertUSD*fx)}</div></div>
+      <div class="mcard"><div class="mlbl">${txt("USD'de tutulacak","Keep in USD")}</div><div class="mval g">${fd(holdUSD)}</div><div class="msub">${txt('Kur tampon olarak','As FX buffer')}</div></div>
+      <div class="mcard"><div class="mlbl">${txt('Çevirme oranı','Conversion ratio')}</div><div class="mval">${fp(minConvert)}</div><div class="msub">${txt('Minimum gerekli','Minimum required')}</div></div>
+    </div>`;
+  const monthlyExp=parseFloat(document.getElementById('cur-exp').value)||80000;
+  document.getElementById('emerg-result').innerHTML=`
+    <div class="cards3" style="margin-bottom:0;">
+      <div class="mcard"><div class="mlbl">${txt('6 aylık acil fon','6-month emergency fund')}</div><div class="mval">${fd(monthlyExp/fx*6)}</div><div class="msub">${f(monthlyExp*6)} ${txt('TRY karşılığı','TRY equivalent')}</div></div>
+      <div class="mcard"><div class="mlbl">${txt('9 aylık (tek gelir min.)','9-month (single-income minimum)')}</div><div class="mval a">${fd(monthlyExp/fx*9)}</div><div class="msub">${txt('Önerilen minimum','Recommended minimum')}</div></div>
+      <div class="mcard"><div class="mlbl">${txt('12 aylık (ideal)','12-month (ideal)')}</div><div class="mval g">${fd(monthlyExp/fx*12)}</div><div class="msub">${txt('Tek gelir için ideal','Ideal for single income')}</div></div>
+    </div>`;
+}
+
+function initCurrencyCharts(){
+  const fxVals=[35,40,43.5,50,55,60,65,70];
+  const exp=80000;const usd=2500;
+  const convertData=fxVals.map(r=>Math.max(0,exp/r));
+  const holdData=fxVals.map(r=>Math.max(0,usd-exp/r));
+  new Chart(document.getElementById('curChart'),{type:'line',data:{labels:fxVals.map(r=>'₺'+r),datasets:[{label:'Çevrilmesi gereken USD',data:convertData.map(v=>Math.round(v)),borderColor:'#E24B4A',backgroundColor:'rgba(226,75,74,0.08)',tension:0.3,fill:true,pointRadius:5},{label:'USD\'de tutulabilecek',data:holdData.map(v=>Math.max(0,Math.round(v))),borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,0.07)',tension:0.3,fill:true,pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': $'+ctx.raw}}},scales:{y:{ticks:{callback:v=>'$'+v}},x:{title:{display:true,text:'USD/TRY kuru'}}}}});
+
+  const fxRange=[35,38,40,43.5,47,50,55,60];
+  const incTRY=fxRange.map(r=>2500*r);
+  const expFixed=fxRange.map(()=>80000);
+  new Chart(document.getElementById('impactChart'),{type:'line',data:{labels:fxRange.map(r=>'₺'+r),datasets:[{label:'Geliriniz (TRY)',data:incTRY,borderColor:'#378ADD',backgroundColor:'rgba(55,138,221,0.08)',tension:0.3,fill:true,pointRadius:5},{label:'Sabit giderler (TRY)',data:expFixed,borderColor:'#E24B4A',backgroundColor:'transparent',tension:0.3,borderDash:[5,3],pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': ₺'+ctx.raw.toLocaleString('tr-TR')}}},scales:{y:{ticks:{callback:v=>'₺'+Math.round(v/1000)+'K'}}}}});
+}
+
+function initInflCharts(){
+  const yrs=['2020','2021','2022','2023','2024','2025','2026*'];
+  const infl=[12.3,19.6,72.3,53.9,44.4,30.9,26];
+  const fx=[7.0,8.9,16.5,23.8,32.9,37.1,43.5];
+  new Chart(document.getElementById('inflChart'),{type:'bar',data:{labels:yrs,datasets:[{label:'Yıllık enflasyon %',data:infl,backgroundColor:infl.map(v=>v>50?'#E24B4A':v>30?'#EF9F27':'#1D9E75'),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw+'%'}}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+  new Chart(document.getElementById('fxHistChart'),{type:'line',data:{labels:yrs,datasets:[{label:'USD/TRY',data:fx,borderColor:'#E24B4A',backgroundColor:'rgba(226,75,74,0.08)',tension:0.3,pointRadius:5,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'₺'+v}}}}});
+
+  const tryVals=fx.map(r=>Math.round(2500*r));
+  new Chart(document.getElementById('retroChart'),{type:'bar',data:{labels:yrs,datasets:[{label:'$2,500\'ın TRY değeri',data:tryVals,backgroundColor:'rgba(24,95,165,0.7)',borderWidth:0,yAxisID:'y'},{type:'line',label:'₺50,000 taksit = kaç USD?',data:fx.map(r=>Math.round(50000/r)),borderColor:'#EF9F27',backgroundColor:'transparent',yAxisID:'y2',tension:0.3,pointRadius:5,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+(ctx.datasetIndex===0?'₺'+ctx.raw.toLocaleString('tr-TR'):'$'+ctx.raw)}}},scales:{y:{ticks:{callback:v=>'₺'+Math.round(v/1000)+'K'}},y2:{position:'right',ticks:{callback:v=>'$'+v},grid:{drawOnChartArea:false}}}}});
+
+  let pp=10000;const ppD=[10000];
+  [12.3,19.6,72.3,53.9,44.4,30.9].forEach(r=>{pp=pp*(1+r/100);ppD.push(Math.round(pp));});
+  new Chart(document.getElementById('ppChart'),{type:'line',data:{labels:yrs,datasets:[{label:'₺10,000 bugünkü eşdeğeri',data:ppD,borderColor:'#D85A30',backgroundColor:'rgba(216,90,48,0.08)',tension:0.3,fill:true,pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'₺'+Math.round(v).toLocaleString('tr-TR')}}}}});
+}
+
+function initProjCharts(){
+  const yrs=['2026','2027','2028','2029','2030','2031'];
+  const b=43.5;
+  const pess=yrs.map((_,i)=>+(b*Math.pow(1.35,i)).toFixed(1));
+  const mid=yrs.map((_,i)=>+(b*Math.pow(1.20,i)).toFixed(1));
+  const opt=yrs.map((_,i)=>+(b*Math.pow(1.12,i)).toFixed(1));
+
+  new Chart(document.getElementById('fxProj'),{type:'line',data:{labels:yrs,datasets:[{label:'Kötümser',data:pess,borderColor:'#E24B4A',backgroundColor:'rgba(226,75,74,0.08)',tension:0.3,pointRadius:4,fill:true,borderWidth:2.5},{label:'Baz',data:mid,borderColor:'#378ADD',backgroundColor:'transparent',tension:0.3,pointRadius:4,borderDash:[5,3]},{label:'İyimser',data:opt,borderColor:'#639922',backgroundColor:'transparent',tension:0.3,pointRadius:4,borderDash:[3,3]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'₺'+v}}}}});
+  new Chart(document.getElementById('incProj'),{type:'line',data:{labels:yrs,datasets:[{label:'Kötümser',data:pess.map(r=>Math.round(2500*r)),borderColor:'#E24B4A',backgroundColor:'rgba(226,75,74,0.08)',tension:0.3,fill:true,pointRadius:4,borderWidth:2.5},{label:'Baz',data:mid.map(r=>Math.round(2500*r)),borderColor:'#378ADD',backgroundColor:'transparent',tension:0.3,pointRadius:4,borderDash:[5,3]},{label:'İyimser',data:opt.map(r=>Math.round(2500*r)),borderColor:'#639922',backgroundColor:'transparent',tension:0.3,pointRadius:4,borderDash:[3,3]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'₺'+Math.round(v/1000)+'K'}}}}});
+
+  const mp=mortPay||50000;
+  new Chart(document.getElementById('mortProj'),{type:'line',data:{labels:yrs,datasets:[{label:'Kötümser',data:pess.map(r=>Math.round(mp/r)),borderColor:'#E24B4A',backgroundColor:'rgba(226,75,74,0.08)',tension:0.3,fill:true,pointRadius:4,borderWidth:2.5},{label:'Baz',data:mid.map(r=>Math.round(mp/r)),borderColor:'#378ADD',backgroundColor:'transparent',tension:0.3,pointRadius:4,borderDash:[5,3]},{label:'İyimser',data:opt.map(r=>Math.round(mp/r)),borderColor:'#639922',backgroundColor:'transparent',tension:0.3,pointRadius:4,borderDash:[3,3]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'$'+v}}}}});
+
+  const baseInc=2500*43.5;const partnerFut=[0,0,1000*43.5,1000*43.5,1500*43.5,1500*43.5];
+  new Chart(document.getElementById('partnerProj'),{type:'bar',data:{labels:yrs,datasets:[{label:'Mevcut gelir (TRY)',data:pess.map(r=>Math.round(2500*r)),backgroundColor:'rgba(55,138,221,0.6)',stack:'a'},{label:'Eş geliri (TRY)',data:pess.map((r,i)=>Math.round(partnerFut[i]||0)),backgroundColor:'rgba(99,153,34,0.7)',stack:'a'},{type:'line',label:'Toplam gider projeksiyonu',data:yrs.map((_,i)=>Math.round(75000*Math.pow(1.27,i))),borderColor:'#E24B4A',backgroundColor:'transparent',tension:0.3,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'₺'+Math.round(v/1000)+'K'}}}}});
+}
+
+function initMortCharts(){
+  const hp=5000000,r=0.03,usd=2500,fx=43.5,inc=usd*fx;
+  const scenarios=[
+    {dp:500000,term:240,lbl:'%10 peşinat · 20 yıl'},
+    {dp:1000000,term:240,lbl:'%20 peşinat · 20 yıl'},
+    {dp:1500000,term:180,lbl:'%30 peşinat · 15 yıl'},
+    {dp:1500000,term:120,lbl:'%30 peşinat · 10 yıl'},
+    {dp:2000000,term:120,lbl:'%40 peşinat · 10 yıl'},
+    {dp:2500000,term:84,lbl:'%50 peşinat · 7 yıl'},
+  ];
+  const rows=scenarios.map(s=>{const loan=hp-s.dp,m=loan*r*Math.pow(1+r,s.term)/(Math.pow(1+r,s.term)-1),total=m*s.term,rat=inc>0?m/inc*100:0;return{...s,loan,m,total,rat,usdM:m/fx};});
+  const tbl=document.getElementById('opt-table');
+  tbl.innerHTML=`<div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 0.8fr;gap:0;font-size:11px;color:var(--color-text-tertiary);padding:4px 0;border-bottom:0.5px solid var(--color-border-secondary);font-weight:500;"><span>Senaryo</span><span style="text-align:right">Kredi</span><span style="text-align:right">Aylık (₺)</span><span style="text-align:right">Aylık (USD)</span><span style="text-align:right">Toplam</span><span style="text-align:right">Oran</span></div>`+rows.map((s,i)=>{const ok=s.rat<=40,warn=s.rat<=55;const b=ok?'ok':warn?'warn':'bad';const hl=i===1?'background:var(--color-background-info);':'';return`<div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 0.8fr;gap:0;padding:6px 4px;font-size:12px;border-bottom:0.5px solid var(--color-border-tertiary);align-items:center;${hl}"><span style="font-weight:500;">${s.lbl}</span><span style="text-align:right;">${f(s.loan)}</span><span style="text-align:right;font-weight:500;">${f(s.m)}</span><span style="text-align:right;">${fd(s.usdM)}</span><span style="text-align:right;">${f(s.total)}</span><span style="text-align:right;"><span class="badge ${b}">${fp(s.rat)}</span></span></div>`;}).join('');
+
+  new Chart(document.getElementById('optBarChart'),{type:'bar',data:{labels:rows.map(s=>s.lbl),datasets:[{label:'Toplam ödeme',data:rows.map(s=>Math.round(s.total)),backgroundColor:rows.map(s=>s.rat<=40?'#1D9E75':s.rat<=55?'#EF9F27':'#E24B4A'),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+f(ctx.raw)}}},scales:{x:{ticks:{callback:v=>'₺'+Math.round(v/1000000).toFixed(1)+'M'}}}}});
+  new Chart(document.getElementById('optMontChart'),{type:'bar',data:{labels:rows.map(s=>s.lbl),datasets:[{label:'Aylık (₺)',data:rows.map(s=>Math.round(s.m)),backgroundColor:'rgba(24,95,165,0.7)',yAxisID:'y'},{type:'line',label:'Aylık (USD)',data:rows.map(s=>Math.round(s.usdM)),borderColor:'#EF9F27',backgroundColor:'transparent',yAxisID:'y2',pointRadius:5,tension:0.1}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.datasetIndex===0?' ₺'+ctx.raw.toLocaleString('tr-TR'):' $'+ctx.raw}}},scales:{y:{ticks:{callback:v=>'₺'+Math.round(v/1000)+'K'}},y2:{position:'right',ticks:{callback:v=>'$'+v},grid:{drawOnChartArea:false}}}}});
+}
+
+function simCalc(){
+  const hp=parseFloat(document.getElementById('sim-hp').value)||5000000;
+  const dp=parseFloat(document.getElementById('sim-dp').value)||1500000;
+  const r=parseFloat(document.getElementById('sim-r').value)/100;
+  const n=parseInt(document.getElementById('sim-t').value);
+  const usd=parseFloat(document.getElementById('sim-usd').value)||2500;
+  const fx=parseFloat(document.getElementById('sim-fx').value)||43.5;
+  const simTN=document.getElementById('sim-tN');if(simTN)simTN.value=n;
+  const loan=Math.max(0,hp-dp);const inc=usd*fx;
+  if(loan<=0){document.getElementById('sim-res').innerHTML='<div class="tip">Peşinat evi tamamen karşılıyor.</div>';return;}
+  const m=loan*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+  const total=m*n,rat=inc>0?m/inc*100:0;
+  const maxLoan=inc>0?inc*0.4/(r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1)):0;
+  const b=rat<=40?'ok':rat<=55?'warn':'bad';
+  document.getElementById('sim-res').innerHTML=`<div class="cards3" style="margin-bottom:10px;"><div class="mcard"><div class="mlbl">Aylık taksit</div><div class="mval">${f(m)}</div><div class="msub">${fd(m/fx)}/ay</div></div><div class="mcard"><div class="mlbl">Toplam ödeme</div><div class="mval">${f(total)}</div><div class="msub">Faiz: ${f(total-loan)}</div></div><div class="mcard"><div class="mlbl">Gelir oranı</div><div class="mval"><span class="badge ${b}" style="font-size:15px;padding:4px 10px;">${fp(rat)}</span></div></div></div><div class="tip"><b>Önerilen maks. kredi:</b> ${f(maxLoan)} · Seçtiğiniz: ${f(loan)} ${loan<=maxLoan?'✓ güvenli':'⚠ limitin üzerinde'}<br><b>Kötümser senaryoda 5 yıl sonra taksit USD maliyeti:</b> ${fd(m/(43.5*Math.pow(1.35,5)))}/ay</div>`;
+  document.getElementById('api-house-amount').value=Math.round(loan);
+  document.getElementById('api-house-term').value=n;
+  syncApiHouseInputs();
+}
+
+function initRisk(){
+  const risks=[
+    {label:'Gelir kesintisi (iş kaybı / hastalık)',level:'bad',detail:'Sıfır yedek gelir. 9+ aylık acil fon zorunlu.'},
+    {label:'TRY güçlenmesi (kur düşerse)',level:'warn',detail:'Geliriniz TRY bazında azalır. Kur 35\'e düşerse $2,500 = ₺87,500.'},
+    {label:'TRY değer kaybı (beklentiniz)',level:'ok',detail:'Geliriniz otomatik büyür. Taksit USD bazında ucuzlar.'},
+    {label:'Faiz artışı riski',level:'ok',detail:'Sabit faizli kredi alırsanız bu risk sizi etkilemez.'},
+    {label:'Beklenmedik büyük gider (arıza, sağlık)',level:'warn',detail:'Tek gelirde tampon zayıf. Acil fon + kasko + sağlık sigortası kritik.'},
+    {label:'Enflasyonun gider artırması',level:'ok',detail:'USD geliriniz gider artışını büyük ölçüde karşılar — TRY maaşlılara kıyasla avantajlısınız.'},
+    {label:'Eş geliri olmadan borç yükü',level:'warn',detail:'Tek gelir kaybolursa taksit ödenemez. Eş geliri başlayana kadar daha düşük kredi düşünün.'},
+  ];
+  document.getElementById('risk-items').innerHTML=risks.map(r=>`<div class="risk-item"><span style="font-size:13px;">${r.label}<br><span style="font-size:11px;color:var(--color-text-tertiary);">${r.detail}</span></span><span class="badge ${r.level}">${r.level==='ok'?'Düşük':r.level==='warn'?'Orta':'Yüksek'}</span></div>`).join('');
+
+  const stresses=[
+    {label:'Kur 35\'e düşer (TRY güçlenir)',income:2500*35,exp:80000},
+    {label:'Kur 43.5 (bugün)',income:2500*43.5,exp:80000},
+    {label:'Kur 55\'e yükselir',income:2500*55,exp:95000},
+    {label:'Kur 70\'e yükselir (kötümser)',income:2500*70,exp:112000},
+    {label:'1 ay gelir kesilir (kredi ödenecek)',income:0,exp:80000},
+  ];
+  document.getElementById('stress-test').innerHTML=`<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:0;font-size:11px;color:var(--color-text-tertiary);padding:4px 0;border-bottom:0.5px solid var(--color-border-secondary);font-weight:500;"><span>Senaryo</span><span style="text-align:right">Gelir (TRY)</span><span style="text-align:right">Gider (TRY)</span><span style="text-align:right">Bakiye</span></div>`+stresses.map(s=>{const bal=s.income-s.exp;const ok=bal>0;return`<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:0;padding:6px 4px;font-size:12px;border-bottom:0.5px solid var(--color-border-tertiary);"><span style="font-weight:500;">${s.label}</span><span style="text-align:right;">${f(s.income)}</span><span style="text-align:right;">${f(s.exp)}</span><span style="text-align:right;font-weight:500;color:${ok?'var(--color-text-success)':'var(--color-text-danger)'};">${f(bal)}</span></div>`;}).join('');
+}
+
+function riskCalc(){
+  const p=parseFloat(document.getElementById('risk-partner').value)||1000;
+  const m=parseInt(document.getElementById('risk-months').value)||12;
+  const fx=43.5;
+  const addTRY=p*fx;
+  document.getElementById('unlock-result').innerHTML=`<div class="cards3" style="margin-bottom:0;"><div class="mcard"><div class="mlbl">Ek aylık gelir</div><div class="mval g">${f(addTRY)}</div><div class="msub">${fd(p)}/ay</div></div><div class="mcard"><div class="mlbl">${m} ay içinde toplam ek</div><div class="mval g">${f(addTRY*m)}</div><div class="msub">Acil fon veya peşinat</div></div><div class="mcard"><div class="mlbl">Alınabilecek maks. ek kredi</div><div class="mval g">${f(addTRY*0.4/0.03*Math.pow(1.03,120)/(Math.pow(1.03,120)-1))}</div><div class="msub">Gelir oranı %40 kuralı</div></div></div>`;
+}
+
+function showTab(t){
+  document.querySelectorAll('.tab').forEach((el,i)=>{el.classList.toggle('active',['welcome','budget','reports','currency','inflation','projection','mortgage','risk'][i]===t);});
+  document.querySelectorAll('.pane').forEach(el=>el.classList.remove('active'));
+  document.getElementById('pane-'+t).classList.add('active');
+  if(t==='reports'){updateReports();}
+  if(t==='currency'&&!window._curInit){initCurrencyCharts();curCalc();window._curInit=true;}
+  if(t==='inflation'&&!window._inflInit){initInflCharts();window._inflInit=true;}
+  if(t==='projection'&&!window._projInit){initProjCharts();window._projInit=true;}
+  if(t==='mortgage'&&!window._mortInit){initMortCharts();simCalc();window._mortInit=true;}
+  if(t==='risk'&&!window._riskInit){initRisk();riskCalc();window._riskInit=true;}
+}
+
+buildCats();
+initTheme();
+initLanguage();
+calcMort();
+calcCar();
+syncApiHouseInputs();
+if(getEmbeddedToken()){
+  const apiInput=document.getElementById('api-token');
+  apiInput.value='token-projectte-gomulu';
+  apiInput.placeholder='Proje ici token aktif';
+}
+</script>
+</body>
+</html>
