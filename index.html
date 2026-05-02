@@ -179,6 +179,21 @@ body[data-theme="light"]{background:radial-gradient(circle at top, rgba(37,103,1
 .loan-meta{font-size:11px;color:var(--color-text-tertiary);text-align:right;line-height:1.5;}
 .api-note{font-size:11px;color:var(--color-text-tertiary);margin-top:8px;line-height:1.45;}
 @media (max-width:900px){.api-grid{grid-template-columns:1fr;}}
+.io-btn{padding:7px 12px;border:0.5px solid var(--color-border-secondary);border-radius:999px;background:var(--color-background-primary);color:var(--color-text-secondary);font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+.io-btn:hover{color:var(--color-text-info);border-color:var(--color-text-info);}
+@media print{
+  .tabs,.pane{display:none!important;}
+  #print-summary{display:block!important;}
+  body{background:white!important;color:#111!important;padding:20px!important;font-family:sans-serif!important;}
+  .ps-h1{font-size:20px;font-weight:700;margin-bottom:4px;}
+  .ps-h2{font-size:13px;font-weight:600;margin:14px 0 6px;text-transform:uppercase;letter-spacing:.05em;color:#444;}
+  .ps-meta{font-size:11px;color:#666;margin-bottom:18px;}
+  .ps-section{margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #ddd;}
+  .ps-row{display:flex;justify-content:space-between;padding:3px 0;font-size:12px;}
+  .ps-lbl{color:#555;}
+  .ps-val{font-weight:500;}
+  .ps-footer{font-size:10px;color:#aaa;margin-top:24px;}
+}
 </style>
 </head>
 <body>
@@ -194,6 +209,10 @@ body[data-theme="light"]{background:radial-gradient(circle at top, rgba(37,103,1
   <button class="tab" onclick="showTab('risk')">🛡 Risk Analizi</button>
   <div class="tabs-spacer"></div>
   <div class="top-controls">
+    <button class="io-btn" onclick="exportJSON()" title="Tüm girişleri .json dosyası olarak kaydet">💾 Kaydet</button>
+    <button class="io-btn" onclick="exportPrint()" title="PDF özet / yazdır">🖨 PDF</button>
+    <button class="io-btn" onclick="document.getElementById('import-input').click()" title="Kaydedilmiş dosyayı yükle">📂 Yükle</button>
+    <input type="file" id="import-input" accept=".json" style="display:none" onchange="importJSON(this)">
     <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()" aria-label="Theme toggle">☀</button>
     <select class="lang-select" id="lang-select" onchange="changeLanguage(this.value)" aria-label="Language selector">
       <option value="tr">TR</option>
@@ -662,6 +681,8 @@ body[data-theme="light"]{background:radial-gradient(circle at top, rgba(37,103,1
     <div id="stress-test"></div>
   </div>
 </div>
+
+<div id="print-summary" style="display:none;padding:20px 30px;max-width:820px;margin:0 auto;"></div>
 
 <script src="lang_en.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -1470,6 +1491,7 @@ function calc(){
 
   updatePie(catTotals);
   updateReports();
+  scheduleSave();
 }
 
 function updatePie(catTotals){
@@ -1735,11 +1757,147 @@ function showTab(t){
   if(t==='risk'&&!window._riskInit){initRisk();riskCalc();window._riskInit=true;}
 }
 
+/* ── State persistence ─────────────────────────────────── */
+const STATE_STORAGE_KEY='budget-codex-state';
+let _saveTimer=null;
+
+const SIMPLE_FIELDS=['usd1','usd2','usd2fut','try-ext','hp','dp','car-price','car-dp',
+  'cur-exp','cur-usd','risk-partner','sim-hp','sim-dp','sim-usd',
+  'api-house-amount','api-house-term','api-car-amount','api-car-term'];
+
+const RANGE_FIELDS=[
+  {id:'fx',dec:2,suf:'',lbl:'fxV',fmt:null},
+  {id:'mr',dec:1,suf:'%',lbl:'mrV',fmt:null},
+  {id:'mt',dec:0,suf:' ay',lbl:'mtV',fmt:v=>v+' ay ('+Math.round(v/12)+' yıl)'},
+  {id:'car-r',dec:1,suf:'%',lbl:'car-rV',fmt:null},
+  {id:'car-t',dec:0,suf:' ay',lbl:'car-tV',fmt:v=>v+' ay'},
+  {id:'cur-fx',dec:2,suf:'',lbl:'cur-fxV',fmt:null},
+  {id:'sim-r',dec:1,suf:'%',lbl:'sim-rV',fmt:null},
+  {id:'sim-t',dec:0,suf:' ay',lbl:'sim-tV',fmt:v=>v+' ay'},
+  {id:'sim-fx',dec:1,suf:'',lbl:'sim-fxV',fmt:null},
+  {id:'risk-months',dec:0,suf:' ay',lbl:'risk-mV',fmt:v=>v+' ay'},
+];
+
+function collectState(){
+  const state={version:'1.1',savedAt:new Date().toISOString(),fields:{},expenses:{},customExpenses:JSON.parse(JSON.stringify(extraItemsByCat)),openCats:{...openCats}};
+  SIMPLE_FIELDS.forEach(id=>{const el=document.getElementById(id);if(el)state.fields[id]=el.value;});
+  RANGE_FIELDS.forEach(({id})=>{const el=document.getElementById(id);if(el)state.fields[id]=el.value;});
+  CATS.forEach(cat=>{
+    [...cat.items.filter(it=>!it.fixed),...(extraItemsByCat[cat.key]||[])].forEach(it=>{
+      const el=document.getElementById('r_'+it.k);if(el)state.expenses[it.k]=el.value;
+    });
+  });
+  return state;
+}
+
+function applyState(state){
+  if(!state||!state.fields)return;
+  if(state.customExpenses){
+    Object.keys(state.customExpenses).forEach(k=>{extraItemsByCat[k]=(state.customExpenses[k]||[]).map(it=>({...it}));});
+  }
+  if(state.openCats)Object.assign(openCats,state.openCats);
+  buildCats();
+  SIMPLE_FIELDS.forEach(id=>{const val=state.fields[id];if(val!=null){const el=document.getElementById(id);if(el)el.value=val;}});
+  RANGE_FIELDS.forEach(({id,dec,suf,fmt})=>{
+    const val=state.fields[id];if(val==null)return;
+    handleRangeInput(id,val,null,dec,suf,fmt?(v=>fmt(parseFloat(v))):null);
+  });
+  CATS.forEach(cat=>{
+    [...cat.items.filter(it=>!it.fixed),...(extraItemsByCat[cat.key]||[])].forEach(it=>{
+      const val=state.expenses?.[it.k];if(val==null)return;
+      const r=document.getElementById('r_'+it.k),n=document.getElementById('n_'+it.k),vEl=document.getElementById('v_'+it.k);
+      if(r)r.value=val;if(n)n.value=val;if(vEl)vEl.textContent=f(parseFloat(val)||0);
+    });
+  });
+  calcMort();calcCar();
+}
+
+function scheduleSave(){clearTimeout(_saveTimer);_saveTimer=setTimeout(()=>{try{localStorage.setItem(STATE_STORAGE_KEY,JSON.stringify(collectState()));}catch(e){}},800);}
+
+function loadState(){
+  try{
+    const raw=localStorage.getItem(STATE_STORAGE_KEY);
+    if(!raw)return false;
+    applyState(JSON.parse(raw));
+    return true;
+  }catch(e){return false;}
+}
+
+/* ── Export JSON ───────────────────────────────────────── */
+function exportJSON(){
+  const state=collectState();
+  state.budgetSnapshot={...budgetSnapshot};
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='finsim-'+new Date().toISOString().split('T')[0]+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ── Import JSON ───────────────────────────────────────── */
+function importJSON(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      applyState(JSON.parse(e.target.result));
+      scheduleSave();
+    }catch(err){alert('Dosya okunamadı: '+err.message);}
+  };
+  reader.readAsText(file);
+  input.value='';
+}
+
+/* ── Print / PDF summary ───────────────────────────────── */
+function buildPrintSummary(){
+  const snap=budgetSnapshot;
+  const fx=snap.fx||43.5,usd=snap.usd||0;
+  const date=new Date().toLocaleDateString('tr-TR',{year:'numeric',month:'long',day:'numeric'});
+  const mRat=snap.totalInc>0?(snap.creditLoad/snap.totalInc*100):0;
+  const tRat=snap.totalInc>0?(snap.grandExp/snap.totalInc*100):0;
+  const catRows=CATS.map(cat=>{
+    const v=snap.catTotals?.[cat.key]||0;
+    return v>0?`<div class="ps-row"><span class="ps-lbl">${cat.name}</span><span class="ps-val">${f(v)}</span></div>`:'';
+  }).join('');
+  return `<div class="ps-h1">Turkey Budget Planner — Özet Rapor</div>
+<div class="ps-meta">Oluşturuldu: ${date} · USD/TRY: ₺${fx.toFixed(2)} · USD gelir: ${fd(usd)}</div>
+<div class="ps-section">
+  <div class="ps-h2">Gelir</div>
+  <div class="ps-row"><span class="ps-lbl">Aylık USD geliri</span><span class="ps-val">${fd(usd)} = ${f(usd*fx)}</span></div>
+  <div class="ps-row"><span class="ps-lbl">Toplam aylık gelir (TRY)</span><span class="ps-val">${f(snap.totalInc||0)}</span></div>
+</div>
+<div class="ps-section">
+  <div class="ps-h2">Giderler</div>
+  <div class="ps-row"><span class="ps-lbl">Konut taksiti</span><span class="ps-val">${f(snap.mortPay||0)}</span></div>
+  <div class="ps-row"><span class="ps-lbl">Araç taksiti</span><span class="ps-val">${f(snap.carPay||0)}</span></div>
+  ${catRows}
+  <div class="ps-row" style="border-top:1px solid #ccc;margin-top:6px;padding-top:6px;font-weight:600;">
+    <span class="ps-lbl">Toplam gider</span><span class="ps-val">${f(snap.grandExp||0)}</span>
+  </div>
+</div>
+<div class="ps-section">
+  <div class="ps-h2">Özet</div>
+  <div class="ps-row"><span class="ps-lbl">Net bakiye</span><span class="ps-val">${f(snap.bal||0)} · ${fd((snap.bal||0)/fx)}/ay</span></div>
+  <div class="ps-row"><span class="ps-lbl">Tasarruf oranı</span><span class="ps-val">${fp(snap.savR||0)} ${(snap.savR||0)>=20?'✓ Hedefte':'⚠ Hedefin altında'}</span></div>
+  <div class="ps-row"><span class="ps-lbl">Kredi / gelir oranı</span><span class="ps-val">${fp(mRat)} ${mRat<=40?'✓ Güvenli':'⚠ Yüksek'}</span></div>
+  <div class="ps-row"><span class="ps-lbl">Toplam gider / gelir</span><span class="ps-val">${fp(tRat)}</span></div>
+  ${snap.mortPay>0?`<div class="ps-row"><span class="ps-lbl">Konut taksitinin USD maliyeti</span><span class="ps-val">${fd((snap.mortPay||0)/fx)}/ay</span></div>`:''}
+</div>
+<div class="ps-footer">Bu rapor finSim ile oluşturulmuştur · github.com/ardacanbakis/finSim · Tarayıcıdan PDF olarak kaydedebilirsiniz.</div>`;
+}
+
+function exportPrint(){
+  const el=document.getElementById('print-summary');
+  el.innerHTML=buildPrintSummary();
+  window.print();
+}
+
+/* ── Init ──────────────────────────────────────────────── */
 buildCats();
 initTheme();
 initLanguage();
-calcMort();
-calcCar();
+if(!loadState()){calcMort();calcCar();}
 syncApiHouseInputs();
 if(getEmbeddedToken()){
   const apiInput=document.getElementById('api-token');
