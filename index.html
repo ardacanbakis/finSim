@@ -179,8 +179,20 @@ body[data-theme="light"]{background:radial-gradient(circle at top, rgba(37,103,1
 .loan-meta{font-size:11px;color:var(--color-text-tertiary);text-align:right;line-height:1.5;}
 .api-note{font-size:11px;color:var(--color-text-tertiary);margin-top:8px;line-height:1.45;}
 @media (max-width:900px){.api-grid{grid-template-columns:1fr;}}
-.io-btn{padding:7px 12px;border:0.5px solid var(--color-border-secondary);border-radius:999px;background:var(--color-background-primary);color:var(--color-text-secondary);font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
-.io-btn:hover{color:var(--color-text-info);border-color:var(--color-text-info);}
+.io-btn{padding:8px 14px;border:0.5px solid var(--color-border-secondary);border-radius:999px;background:var(--color-background-primary);color:var(--color-text-secondary);font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-weight:500;}
+.io-btn:hover,.io-btn.active{color:var(--color-text-info);border-color:var(--color-text-info);}
+.io-popup-wrap{position:relative;display:inline-flex;}
+.io-popup{position:absolute;right:0;top:calc(100% + 10px);width:272px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:18px;padding:14px 12px;z-index:200;box-shadow:0 12px 40px rgba(0,0,0,0.32);display:none;flex-direction:column;gap:2px;}
+.io-popup.open{display:flex;}
+.io-pop-section{font-size:10px;font-weight:600;color:var(--color-text-tertiary);letter-spacing:.09em;text-transform:uppercase;padding:4px 8px 2px;}
+.io-pop-divider{height:0.5px;background:var(--color-border-tertiary);margin:6px 4px;}
+.io-pop-row{display:flex;align-items:flex-start;gap:10px;padding:9px 8px;border-radius:10px;background:transparent;border:none;cursor:pointer;width:100%;text-align:left;color:var(--color-text-primary);}
+.io-pop-row:hover{background:var(--color-background-primary);}
+.io-pop-icon{font-size:17px;flex-shrink:0;margin-top:1px;line-height:1;}
+.io-pop-copy{display:flex;flex-direction:column;gap:2px;}
+.io-pop-label{font-size:13px;font-weight:500;color:var(--color-text-primary);}
+.io-pop-sub{font-size:11px;color:var(--color-text-tertiary);line-height:1.45;}
+.io-pop-note{font-size:11px;color:var(--color-text-tertiary);line-height:1.5;padding:8px 10px;background:var(--color-background-primary);border-radius:9px;margin-top:4px;}
 @media print{
   .tabs,.pane{display:none!important;}
   #print-summary{display:block!important;}
@@ -209,10 +221,37 @@ body[data-theme="light"]{background:radial-gradient(circle at top, rgba(37,103,1
   <button class="tab" onclick="showTab('risk')">🛡 Risk Analizi</button>
   <div class="tabs-spacer"></div>
   <div class="top-controls">
-    <button class="io-btn" onclick="exportJSON()" title="Tüm girişleri .json dosyası olarak kaydet">💾 Kaydet</button>
-    <button class="io-btn" onclick="exportPrint()" title="PDF özet / yazdır">🖨 PDF</button>
-    <button class="io-btn" onclick="document.getElementById('import-input').click()" title="Kaydedilmiş dosyayı yükle">📂 Yükle</button>
-    <input type="file" id="import-input" accept=".json" style="display:none" onchange="importJSON(this)">
+    <div class="io-popup-wrap" id="io-wrap">
+      <button class="io-btn" id="io-main-btn" onclick="toggleIOPopup()">💾 Oturum ▾</button>
+      <div class="io-popup" id="io-popup">
+        <div class="io-pop-section">Dışa Aktar</div>
+        <button class="io-pop-row" onclick="exportJSON();closeIOPopup()">
+          <span class="io-pop-icon">💾</span>
+          <span class="io-pop-copy">
+            <span class="io-pop-label">JSON olarak kaydet</span>
+            <span class="io-pop-sub">Tüm girişleri .json dosyasına yaz — daha sonra geri yüklenebilir</span>
+          </span>
+        </button>
+        <button class="io-pop-row" onclick="exportPrint();closeIOPopup()">
+          <span class="io-pop-icon">🖨</span>
+          <span class="io-pop-copy">
+            <span class="io-pop-label">PDF özet / yazdır</span>
+            <span class="io-pop-sub">Hesaplamaların özetini tarayıcıdan PDF olarak kaydet</span>
+          </span>
+        </button>
+        <div class="io-pop-divider"></div>
+        <div class="io-pop-section">İçe Aktar</div>
+        <button class="io-pop-row" onclick="document.getElementById('import-input').click();closeIOPopup()">
+          <span class="io-pop-icon">📂</span>
+          <span class="io-pop-copy">
+            <span class="io-pop-label">Dosyadan yükle</span>
+            <span class="io-pop-sub">Kaydedilmiş .json dosyasını seçerek oturumu tam olarak geri yükle</span>
+          </span>
+        </button>
+        <input type="file" id="import-input" accept=".json" style="display:none" onchange="importJSON(this)">
+        <div class="io-pop-note">💡 Oturum her hesaplamada tarayıcıya otomatik kaydedilir — sayfayı kapatsanız bile devam eder.</div>
+      </div>
+    </div>
     <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()" aria-label="Theme toggle">☀</button>
     <select class="lang-select" id="lang-select" onchange="changeLanguage(this.value)" aria-label="Language selector">
       <option value="tr">TR</option>
@@ -1756,6 +1795,22 @@ function showTab(t){
   if(t==='mortgage'&&!window._mortInit){initMortCharts();simCalc();window._mortInit=true;}
   if(t==='risk'&&!window._riskInit){initRisk();riskCalc();window._riskInit=true;}
 }
+
+/* ── Session popup ─────────────────────────────────────── */
+function toggleIOPopup(){
+  const popup=document.getElementById('io-popup');
+  const btn=document.getElementById('io-main-btn');
+  const isOpen=popup.classList.toggle('open');
+  btn.classList.toggle('active',isOpen);
+}
+function closeIOPopup(){
+  document.getElementById('io-popup')?.classList.remove('open');
+  document.getElementById('io-main-btn')?.classList.remove('active');
+}
+document.addEventListener('click',e=>{
+  const wrap=document.getElementById('io-wrap');
+  if(wrap&&!wrap.contains(e.target))closeIOPopup();
+});
 
 /* ── State persistence ─────────────────────────────────── */
 const STATE_STORAGE_KEY='budget-codex-state';
