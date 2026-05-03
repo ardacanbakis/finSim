@@ -2,6 +2,14 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>finSim — Turkey Budget Planner</title>
+<meta name="description" content="USD geliriniz, TRY giderleriniz, konut krediniz ve kur senaryolarınızı tek tabloda planlayın.">
+<meta property="og:title" content="finSim — Turkey Budget Planner">
+<meta property="og:description" content="USD income household in Turkey — mortgage, vehicle finance, monthly costs and FX scenarios in one shared dashboard.">
+<meta name="theme-color" content="#141b23">
+<link rel="icon" href="finsim_favicon_minimal.svg" type="image/svg+xml">
 <style>
 :root{
   --font-sans: "Inter", "Segoe UI", sans-serif;
@@ -44,8 +52,13 @@ body[data-theme="light"]{
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:var(--font-sans);background:radial-gradient(circle at top, rgba(86,156,214,0.09), transparent 30%),linear-gradient(180deg,#0f141b 0%, #141b23 100%);color:var(--color-text-primary);padding:1rem 0 3rem;transition:background .25s ease,color .25s ease;}
-.tabs{display:flex;gap:2px;border:0.5px solid var(--color-border-tertiary);margin-bottom:1.5rem;flex-wrap:wrap;position:sticky;top:0;z-index:20;background:rgba(20,27,35,0.88);backdrop-filter:blur(16px);padding:8px 10px;border-radius:18px;}
-.tab{padding:8px 14px;font-size:13px;cursor:pointer;border:none;background:transparent;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-1px;}
+.tabs{display:flex;align-items:center;gap:0;border:0.5px solid var(--color-border-tertiary);margin-bottom:1.5rem;flex-wrap:nowrap;position:sticky;top:0;z-index:20;background:rgba(20,27,35,0.88);backdrop-filter:blur(16px);padding:5px 10px;border-radius:18px;}
+.tabs-scroll{display:flex;gap:2px;overflow-x:auto;flex:1;min-width:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 0;}
+.tabs-scroll::-webkit-scrollbar{display:none;}
+.logo-nav-btn{background:none;border:none;cursor:pointer;padding:3px 10px 3px 2px;display:flex;align-items:center;flex-shrink:0;opacity:.88;transition:opacity .15s;}
+.logo-nav-btn:hover{opacity:1;}
+.nav-logo{height:24px;display:block;}
+.tab{padding:8px 14px;font-size:13px;cursor:pointer;border:none;background:transparent;color:var(--color-text-secondary);border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;}
 .tab.active{color:var(--color-text-primary);border-bottom-color:var(--color-text-primary);font-weight:500;}
 .pane{display:none;}.pane.active{display:block;}
 .cards4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1.4rem;}
@@ -179,6 +192,41 @@ body[data-theme="light"]{background:radial-gradient(circle at top, rgba(37,103,1
 .loan-meta{font-size:11px;color:var(--color-text-tertiary);text-align:right;line-height:1.5;}
 .api-note{font-size:11px;color:var(--color-text-tertiary);margin-top:8px;line-height:1.45;}
 @media (max-width:900px){.api-grid{grid-template-columns:1fr;}}
+/* welcome overlay */
+.wov{position:fixed;inset:0;z-index:300;overflow-y:auto;-webkit-overflow-scrolling:touch;background:radial-gradient(circle at top,rgba(86,156,214,0.09),transparent 30%),linear-gradient(180deg,#0f141b 0%,#141b23 100%);}
+body[data-theme="light"] .wov{background:radial-gradient(circle at top,rgba(37,103,167,0.1),transparent 30%),linear-gradient(180deg,#f4f8fc 0%,#eef3f8 100%);}
+.wov.hidden{display:none;}
+.wov-inner{max-width:920px;margin:0 auto;padding:3rem 1.5rem 5rem;}
+.wov-hero{text-align:center;padding:2rem 0 2.5rem;}
+.wov-logo{height:44px;margin-bottom:1.5rem;display:block;margin-left:auto;margin-right:auto;}
+.wov-title{font-size:clamp(20px,3.5vw,34px);font-weight:600;line-height:1.22;margin-bottom:14px;color:var(--color-text-primary);}
+.wov-sub{font-size:14px;color:var(--color-text-secondary);line-height:1.75;max-width:680px;margin:0 auto;}
+.wov-section-lbl{font-size:10px;font-weight:600;color:var(--color-text-tertiary);letter-spacing:.09em;text-transform:uppercase;margin:1.8rem 0 10px;}
+.wov-cta{display:block;width:100%;max-width:340px;margin:2.5rem auto 0;padding:15px 24px;background:#185FA5;color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;transition:background .18s,transform .12s;}
+.wov-cta:hover{background:#1A72C4;transform:translateY(-1px);}
+/* mobile */
+@media(max-width:640px){
+  body{padding:.5rem 0 2rem;}
+  .wov-inner{padding:1.5rem 1rem 4rem;}
+  .wov-hero{padding:1.5rem 0 2rem;}
+  .tabs{padding:4px 8px;border-radius:14px;margin-bottom:1rem;}
+  .tab{padding:7px 10px;font-size:12px;}
+  .nav-logo{height:20px;}
+  .cards4,.cards5{grid-template-columns:repeat(2,1fr);}
+  .hero{padding:16px 16px;}
+  .hero h1{font-size:20px;}
+  .budget-layout{grid-template-columns:1fr;}
+  .two{grid-template-columns:1fr;}
+  .section-grid{grid-template-columns:1fr;}
+  .welcome-list{grid-template-columns:1fr;}
+  .report-grid{grid-template-columns:1fr;}
+  .api-grid{grid-template-columns:1fr;}
+  .cards3{grid-template-columns:repeat(2,1fr);}
+  .top-controls{gap:5px;}
+  .io-btn{padding:6px 10px;font-size:11px;}
+  .theme-btn{width:32px;height:32px;font-size:14px;}
+  .lang-select{padding:6px 8px;font-size:11px;}
+}
 .io-btn{padding:8px 14px;border:0.5px solid var(--color-border-secondary);border-radius:999px;background:var(--color-background-primary);color:var(--color-text-secondary);font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-weight:500;}
 .io-btn:hover,.io-btn.active{color:var(--color-text-info);border-color:var(--color-text-info);}
 .io-popup-wrap{position:relative;display:inline-flex;}
@@ -211,15 +259,18 @@ body[data-theme="light"]{background:radial-gradient(circle at top, rgba(37,103,1
 <body>
 
 <div class="tabs">
-  <button class="tab active" onclick="showTab('welcome')">👋 Başlangıç</button>
-  <button class="tab" onclick="showTab('budget')">💰 Bütçe</button>
-  <button class="tab" onclick="showTab('reports')">📊 Raporlar</button>
-  <button class="tab" onclick="showTab('currency')">💱 Kur Stratejisi</button>
-  <button class="tab" onclick="showTab('inflation')">📈 Enflasyon Tarihi</button>
-  <button class="tab" onclick="showTab('projection')">🔮 Gelecek</button>
-  <button class="tab" onclick="showTab('mortgage')">🏠 Kredi Opt.</button>
-  <button class="tab" onclick="showTab('risk')">🛡 Risk Analizi</button>
-  <div class="tabs-spacer"></div>
+  <button class="logo-nav-btn" onclick="toggleWelcome()" title="Hoş geldin sayfasına dön">
+    <img src="finsim_logo_dark.svg" id="nav-logo" class="nav-logo" alt="finSim">
+  </button>
+  <div class="tabs-scroll">
+    <button class="tab active" onclick="showTab('budget')">💰 Bütçe</button>
+    <button class="tab" onclick="showTab('reports')">📊 Raporlar</button>
+    <button class="tab" onclick="showTab('currency')">💱 Kur Stratejisi</button>
+    <button class="tab" onclick="showTab('inflation')">📈 Enflasyon Tarihi</button>
+    <button class="tab" onclick="showTab('projection')">🔮 Gelecek</button>
+    <button class="tab" onclick="showTab('mortgage')">🏠 Kredi Opt.</button>
+    <button class="tab" onclick="showTab('risk')">🛡 Risk Analizi</button>
+  </div>
   <div class="top-controls">
     <div class="io-popup-wrap" id="io-wrap">
       <button class="io-btn" id="io-main-btn" onclick="toggleIOPopup()">💾 Oturum ▾</button>
@@ -260,64 +311,8 @@ body[data-theme="light"]{background:radial-gradient(circle at top, rgba(37,103,1
   </div>
 </div>
 
-<div id="pane-welcome" class="pane active">
-  <div class="hero">
-    <h1>Turkiye'de ev, araba ve aylik hayat masraflarini tek tabloda planlayin.</h1>
-    <p>Bu sayfa USD geliriniz, TRY giderleriniz, konut krediniz, arac finansmaniniz ve kur senaryolarinizi birbirine baglar. En iyi sonuc icin kendi gelir, kredi, pesinat ve aylik harcama bilgilerinizi girin; kredi karsilastirma bolumunde ise CollectAPI'den gelen teklifleri secerek aylik taksitleri dogrudan ana butceye tasiyin.</p>
-  </div>
-
-  <div class="section-grid">
-    <div class="card">
-      <h3>Sayfa nasil kullanilir?</h3>
-      <div class="welcome-list">
-        <div class="welcome-card"><h4>1. Geliri girin</h4><p>Butce sekmesinde sizin USD geliriniz, varsa es geliri ve ek TRY gelirleri yer alir. Bu alanlar tum oran ve risk hesaplarinin temelidir.</p></div>
-        <div class="welcome-card"><h4>2. Ev ve araci tanimlayin</h4><p>Konut ve arac kartlarinda fiyat, pesinat, vade ve faiz bilgilerini girin. Bu aylik taksitler toplam giderinize otomatik eklenir.</p></div>
-        <div class="welcome-card"><h4>3. Giderleri gercege yakin yapin</h4><p>Detayli giderler bolumunde market, ulasim, saglik ve diger kalemleri kendi hayat duzeninize gore ayarlayin.</p></div>
-        <div class="welcome-card"><h4>4. API teklifini secin</h4><p>CollectAPI sekmesinde size uygun ev veya tasit kredisini secerseniz, faiz ve aylik odeme ana butceye yazilir. Boylece tablo gercek banka teklifiyle guncellenir.</p></div>
-      </div>
-    </div>
-    <div class="card">
-      <h3>Bu uyari ne anlama geliyor?</h3>
-      <div class="warn-box">
-        <b>⚠ Tek gelirli USD hane — yüksek kur riski profili.</b> Tüm analizler bu profile göre ayarlandı. Kötümser TRY/USD senaryosu öncelikli görünüm olarak işaretlendi.
-      </div>
-      <div class="tip"><b>Aciklama:</b> Bu uyari, hanenin ana nakit akisinin tek kisiye bagli oldugunu varsayar. Kur yukseldiginde geliriniz TRY bazinda artar; ama gelir kesintisi, is degisimi veya beklenmedik buyuk giderler durumunda ikinci bir gelir tampondan yoksun kalirsiniz.</div>
-      <div class="mini-note">Bu nedenle uygulama; kredi/gelir oranlarini daha tutucu yorumlar, 9-12 aylik acil fonu onerir ve risk analizinde "tek gelir" senaryosunu merkeze alir.</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3>Hangi sekme ne yapar?</h3>
-    <div class="welcome-list">
-      <div class="welcome-card clickable" onclick="showTab('budget')"><h4>Butce</h4><p>Ana veri giris ekrani. Gelir, konut, arac ve tum aylik yasam giderleri burada baglanir.</p></div>
-      <div class="welcome-card clickable" onclick="showTab('currency')"><h4>Kur Stratejisi</h4><p>Ne kadar USD bozdurmaniz gerektigini ve acil fon ihtiyacinizi hesaplar.</p></div>
-      <div class="welcome-card clickable" onclick="showTab('inflation')"><h4>Enflasyon Tarihi</h4><p>Gecmis enflasyon ve USD/TRY hareketlerini gosterir; bugunku tablonuzu tarihsel baglama oturtur.</p></div>
-      <div class="welcome-card clickable" onclick="showTab('projection')"><h4>Gelecek</h4><p>Kur senaryolari altinda gelirinizin, giderinizin ve kredi maliyetinizin nasil degisecegini gosterir.</p></div>
-      <div class="welcome-card clickable" onclick="showTab('mortgage')"><h4>Kredi Opt.</h4><p>Konut ve tasit tekliflerini canli cekip secmenizi saglar. Sectiginiz teklifler ana sayfaya import edilir.</p></div>
-      <div class="welcome-card clickable" onclick="showTab('risk')"><h4>Risk Analizi</h4><p>Gelir kesintisi, kur dususu ve beklenmedik giderler altinda butcenizin ne kadar dayanikli oldugunu olcer.</p></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3>Hizli kurulum soru listesi</h3>
-    <div class="tip"><b>Kimler icin?</b> Bu bolum, araci ilk kez kullanan kisiler icin hizli bir baslangic taslagi uretir. Varsayilan degerlerinizi degistirmez; sadece alttaki butona basilirsa secilen taslak uygulanir.</div>
-    <div class="template-grid">
-      <div class="field"><label>Aylik USD gelir</label><input type="number" id="tpl-usd1" value="2500" step="100"></div>
-      <div class="field"><label>Es / ikinci gelir (USD)</label><input type="number" id="tpl-usd2" value="0" step="100"></div>
-      <div class="field"><label>Konut plani</label><select id="tpl-home" style="width:100%;padding:8px 9px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);"><option value="mortgage">Ev almak istiyor</option><option value="cash">Pesin / kredissiz</option><option value="later">Daha sonra bakacak</option></select></div>
-      <div class="field"><label>Arac plani</label><select id="tpl-car" style="width:100%;padding:8px 9px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);"><option value="loan">Arac kredisi dusunuyor</option><option value="cash">Araci pesin alacak</option><option value="none">Arac yok</option></select></div>
-      <div class="field"><label>Harcama stili</label><select id="tpl-style" style="width:100%;padding:8px 9px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);"><option value="lean">Temkinli</option><option value="balanced" selected>Dengeli</option><option value="comfortable">Rahat</option></select></div>
-      <div class="field"><label>Hane tipi</label><select id="tpl-household" style="width:100%;padding:8px 9px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);"><option value="single">Tek kisi</option><option value="couple" selected>Cift</option><option value="family">Kucuk aile</option></select></div>
-    </div>
-    <div class="inline-actions">
-      <button class="action-btn" onclick="applyWelcomeTemplate()">Taslagi uygula</button>
-      <div class="helper" id="tpl-status">Bu taslak istege baglidir. Baslangic noktasi uretir, sonra tum alanlar tek tek duzenlenebilir.</div>
-    </div>
-  </div>
-</div>
-
 <!-- BUDGET TAB -->
-<div id="pane-budget" class="pane">
+<div id="pane-budget" class="pane active">
   <div class="cards4">
     <div class="mcard"><div class="mlbl">Aylık TRY geliri</div><div class="mval" id="c-inc">₺0</div><div class="msub" id="c-usd-sub">$2,500 / ay</div></div>
     <div class="mcard"><div class="mlbl">Toplam gider</div><div class="mval r" id="c-exp">₺0</div></div>
@@ -721,6 +716,59 @@ body[data-theme="light"]{background:radial-gradient(circle at top, rgba(37,103,1
   </div>
 </div>
 
+<!-- WELCOME OVERLAY -->
+<div id="welcome-overlay" class="wov">
+  <div class="wov-inner">
+
+    <div class="wov-hero">
+      <img src="finsim_logo_dark.svg" id="wov-logo" class="wov-logo" alt="finSim">
+      <h1 class="wov-title">Türkiye'de ev, araba ve aylık hayat masraflarını tek tabloda planlayın.</h1>
+      <p class="wov-sub">USD geliriniz, TRY giderleriniz, konut krediniz, araç finansmanınız ve kur senaryolarınızı birbirine bağlar. Kendi gelir, kredi, peşinat ve aylık harcama bilgilerinizi girin; CollectAPI tekliflerini seçerek aylık taksitleri doğrudan ana bütçeye taşıyın.</p>
+    </div>
+
+    <div class="wov-section-lbl">Nasıl kullanılır?</div>
+    <div class="welcome-list" style="margin-bottom:16px">
+      <div class="welcome-card"><h4>1. Geliri girin</h4><p>Bütçe sekmesinde sizin USD geliriniz, varsa eş geliri ve ek TRY gelirleri yer alır. Bu alanlar tüm oran ve risk hesaplarının temelidir.</p></div>
+      <div class="welcome-card"><h4>2. Ev ve aracı tanımlayın</h4><p>Konut ve araç kartlarında fiyat, peşinat, vade ve faiz bilgilerini girin. Aylık taksitler toplam giderinize otomatik eklenir.</p></div>
+      <div class="welcome-card"><h4>3. Giderleri gerçeğe yakın yapın</h4><p>Detaylı giderler bölümünde market, ulaşım, sağlık ve diğer kalemleri kendi hayat düzeyinize göre ayarlayın.</p></div>
+      <div class="welcome-card"><h4>4. API teklifini seçin</h4><p>Kredi Opt. sekmesinde size uygun ev veya taşıt kredisini seçerseniz, faiz ve aylık ödeme ana bütçeye yazılır.</p></div>
+    </div>
+
+    <div class="warn-box" style="margin-bottom:10px"><b>⚠ Tek gelirli USD hane — yüksek kur riski profili.</b> Tüm analizler bu profile göre ayarlandı. Kötümser TRY/USD senaryosu öncelikli görünüm olarak işaretlendi.</div>
+    <div class="mini-note" style="margin-bottom:4px">Bu nedenle uygulama; kredi/gelir oranlarını daha tutucu yorumlar, 9–12 aylık acil fonu önerir ve risk analizinde "tek gelir" senaryosunu merkeze alır.</div>
+
+    <div class="wov-section-lbl">Hangi sekme ne yapar?</div>
+    <div class="welcome-list" style="margin-bottom:20px">
+      <div class="welcome-card clickable" onclick="showTabFromWelcome('budget')"><h4>💰 Bütçe</h4><p>Ana veri giriş ekranı. Gelir, konut, araç ve tüm aylık yaşam giderleri burada bağlanır.</p></div>
+      <div class="welcome-card clickable" onclick="showTabFromWelcome('currency')"><h4>💱 Kur Stratejisi</h4><p>Ne kadar USD bozdurmak gerektiğini ve acil fon ihtiyacını hesaplar.</p></div>
+      <div class="welcome-card clickable" onclick="showTabFromWelcome('inflation')"><h4>📈 Enflasyon Tarihi</h4><p>Geçmiş enflasyon ve USD/TRY hareketlerini gösterir; bugünkü tabloyu tarihsel bağlama oturtur.</p></div>
+      <div class="welcome-card clickable" onclick="showTabFromWelcome('projection')"><h4>🔮 Gelecek</h4><p>Kur senaryoları altında gelirinizin, giderinizin ve kredi maliyetinizin nasıl değişeceğini gösterir.</p></div>
+      <div class="welcome-card clickable" onclick="showTabFromWelcome('mortgage')"><h4>🏠 Kredi Opt.</h4><p>Konut ve taşıt tekliflerini canlı çekip seçmenizi sağlar. Seçilen teklifler ana sayfaya import edilir.</p></div>
+      <div class="welcome-card clickable" onclick="showTabFromWelcome('risk')"><h4>🛡 Risk Analizi</h4><p>Gelir kesintisi, kur düşüşü ve beklenmedik giderler altında bütçenizin ne kadar dayanıklı olduğunu ölçer.</p></div>
+    </div>
+
+    <div class="card">
+      <h3>Hızlı kurulum</h3>
+      <div class="tip"><b>İlk kez mi kullanıyorsunuz?</b> Aşağıdaki seçimlerle bir başlangıç noktası oluşturabilirsiniz. Taslağı uyguladıktan sonra tüm alanlar serbestçe düzenlenebilir.</div>
+      <div class="template-grid">
+        <div class="field"><label>Aylık USD gelir</label><input type="number" id="tpl-usd1" value="2500" step="100"></div>
+        <div class="field"><label>Eş / ikinci gelir (USD)</label><input type="number" id="tpl-usd2" value="0" step="100"></div>
+        <div class="field"><label>Konut planı</label><select id="tpl-home" style="width:100%;padding:8px 9px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);"><option value="mortgage">Ev almak istiyor</option><option value="cash">Peşin / kredisiz</option><option value="later">Daha sonra bakacak</option></select></div>
+        <div class="field"><label>Araç planı</label><select id="tpl-car" style="width:100%;padding:8px 9px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);"><option value="loan">Araç kredisi düşünüyor</option><option value="cash">Aracı peşin alacak</option><option value="none">Araç yok</option></select></div>
+        <div class="field"><label>Harcama stili</label><select id="tpl-style" style="width:100%;padding:8px 9px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);"><option value="lean">Temkinli</option><option value="balanced" selected>Dengeli</option><option value="comfortable">Rahat</option></select></div>
+        <div class="field"><label>Hane tipi</label><select id="tpl-household" style="width:100%;padding:8px 9px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);"><option value="single">Tek kişi</option><option value="couple" selected>Çift</option><option value="family">Küçük aile</option></select></div>
+      </div>
+      <div class="inline-actions">
+        <button class="action-btn" onclick="applyWelcomeTemplate()">Taslağı uygula ve başla →</button>
+        <div class="helper" id="tpl-status">Bu taslak isteğe bağlıdır. Başlangıç noktası üretir, sonra tüm alanlar tek tek düzenlenebilir.</div>
+      </div>
+    </div>
+
+    <button class="wov-cta" onclick="hideWelcome()">Bütçeye Başla →</button>
+
+  </div>
+</div>
+
 <div id="print-summary" style="display:none;padding:20px 30px;max-width:820px;margin:0 auto;"></div>
 
 <script src="lang_en.js"></script>
@@ -879,6 +927,8 @@ function applyTheme(theme){
   localStorage.setItem(THEME_STORAGE_KEY,next);
   const btn=document.getElementById('theme-toggle');
   if(btn)btn.textContent=next==='dark'?'☀':'🌙';
+  const logoSrc=next==='dark'?'finsim_logo_dark.svg':'finsim_logo_light.svg';
+  ['nav-logo','wov-logo'].forEach(id=>{const el=document.getElementById(id);if(el)el.src=logoSrc;});
 }
 
 function toggleTheme(){
@@ -900,8 +950,8 @@ function captureStaticTexts(){
     mlbls:[...document.querySelectorAll('.mlbl')].map(el=>el.textContent),
     welcomeTitles:[...document.querySelectorAll('.welcome-card h4')].map(el=>el.textContent),
     welcomeBodies:[...document.querySelectorAll('.welcome-card p')].map(el=>el.textContent),
-    tips:[...document.querySelectorAll('#pane-welcome .tip, #pane-welcome .mini-note')].map(el=>el.innerHTML),
-    helperTexts:[...document.querySelectorAll('#pane-welcome .helper')].map(el=>el.textContent)
+    tips:[...document.querySelectorAll('#welcome-overlay .tip, #welcome-overlay .mini-note')].map(el=>el.innerHTML),
+    helperTexts:[...document.querySelectorAll('#welcome-overlay .helper')].map(el=>el.textContent)
   };
 }
 
@@ -916,8 +966,8 @@ function applyStaticLanguage(lang){
     [...document.querySelectorAll('.mlbl')].forEach((el,i)=>{if(pack.mlbls?.[i])el.textContent=pack.mlbls[i];});
     [...document.querySelectorAll('.welcome-card h4')].forEach((el,i)=>{if(pack.welcomeTitles?.[i])el.textContent=pack.welcomeTitles[i];});
     [...document.querySelectorAll('.welcome-card p')].forEach((el,i)=>{if(pack.welcomeBodies?.[i])el.textContent=pack.welcomeBodies[i];});
-    [...document.querySelectorAll('#pane-welcome .tip, #pane-welcome .mini-note')].forEach((el,i)=>{if(pack.welcomeTips?.[i])el.innerHTML=pack.welcomeTips[i];});
-    [...document.querySelectorAll('#pane-welcome .helper')].forEach((el,i)=>{if(pack.welcomeHelpers?.[i])el.textContent=pack.welcomeHelpers[i];});
+    [...document.querySelectorAll('#welcome-overlay .tip, #welcome-overlay .mini-note')].forEach((el,i)=>{if(pack.welcomeTips?.[i])el.innerHTML=pack.welcomeTips[i];});
+    [...document.querySelectorAll('#welcome-overlay .helper')].forEach((el,i)=>{if(pack.welcomeHelpers?.[i])el.textContent=pack.welcomeHelpers[i];});
     const map={
       'report-exp-explainer':"This report helps you read monthly expenses by category. Bar view is best for comparing absolute size, radar highlights balance across categories, and polar or pie views make it easier to see which parts of the budget dominate the whole.",
       'report-fx-explainer':"The FX sensitivity report shows how income, expenses, and net balance may shift when USD/TRY moves across different levels. It is especially helpful for single-income USD households that want to understand whether FX is acting as a buffer or a pressure point.",
@@ -936,8 +986,8 @@ function applyStaticLanguage(lang){
     [...document.querySelectorAll('.mlbl')].forEach((el,i)=>{el.textContent=trStaticSnapshot.mlbls[i]||el.textContent;});
     [...document.querySelectorAll('.welcome-card h4')].forEach((el,i)=>{el.textContent=trStaticSnapshot.welcomeTitles[i]||el.textContent;});
     [...document.querySelectorAll('.welcome-card p')].forEach((el,i)=>{el.textContent=trStaticSnapshot.welcomeBodies[i]||el.textContent;});
-    [...document.querySelectorAll('#pane-welcome .tip, #pane-welcome .mini-note')].forEach((el,i)=>{el.innerHTML=trStaticSnapshot.tips[i]||el.innerHTML;});
-    [...document.querySelectorAll('#pane-welcome .helper')].forEach((el,i)=>{el.textContent=trStaticSnapshot.helperTexts[i]||el.textContent;});
+    [...document.querySelectorAll('#welcome-overlay .tip, #welcome-overlay .mini-note')].forEach((el,i)=>{el.innerHTML=trStaticSnapshot.tips[i]||el.innerHTML;});
+    [...document.querySelectorAll('#welcome-overlay .helper')].forEach((el,i)=>{el.textContent=trStaticSnapshot.helperTexts[i]||el.textContent;});
     const map={
       'report-exp-explainer':'Bu rapor, aylik giderlerinizi kategori bazinda okumanizi saglar. Bar gorunumu mutlak buyuklukleri hizli karsilastirir, radar gorunumu kategoriler arasindaki dengeyi gosterir, polar ve pie ise butcenin hangi kalemlerde yogunlastigini oran olarak okumayi kolaylastirir.',
       'report-fx-explainer':'Kur hassasiyet raporu, USD/TRY farkli seviyelere geldiginde gelirinizin, giderinizin ve net bakiyenizin nasil degisebilecegini gosterir. Bu gorunum ozellikle tek gelirli USD hanelerde kurun sizin lehinize mi aleyhinize mi calistigini tek bakista anlatir.',
@@ -1640,6 +1690,8 @@ function applyWelcomeTemplate(){
   calcCar();
   calc();
   document.getElementById('tpl-status').textContent='Taslak uygulandi. Tum alanlar simdi duzenlenebilir.';
+  hideWelcome();
+  showTab('budget');
 }
 
 function curCalc(){
@@ -1785,7 +1837,7 @@ function riskCalc(){
 }
 
 function showTab(t){
-  document.querySelectorAll('.tab').forEach((el,i)=>{el.classList.toggle('active',['welcome','budget','reports','currency','inflation','projection','mortgage','risk'][i]===t);});
+  document.querySelectorAll('.tabs-scroll .tab').forEach((el,i)=>{el.classList.toggle('active',['budget','reports','currency','inflation','projection','mortgage','risk'][i]===t);});
   document.querySelectorAll('.pane').forEach(el=>el.classList.remove('active'));
   document.getElementById('pane-'+t).classList.add('active');
   if(t==='reports'){updateReports();}
@@ -1795,6 +1847,29 @@ function showTab(t){
   if(t==='mortgage'&&!window._mortInit){initMortCharts();simCalc();window._mortInit=true;}
   if(t==='risk'&&!window._riskInit){initRisk();riskCalc();window._riskInit=true;}
 }
+
+/* ── Welcome overlay ───────────────────────────────────── */
+function showWelcome(){
+  const ov=document.getElementById('welcome-overlay');
+  if(ov)ov.classList.remove('hidden');
+}
+function hideWelcome(){
+  const ov=document.getElementById('welcome-overlay');
+  if(ov)ov.classList.add('hidden');
+}
+function toggleWelcome(){
+  const ov=document.getElementById('welcome-overlay');
+  if(!ov)return;
+  if(ov.classList.contains('hidden'))showWelcome();else hideWelcome();
+}
+function showTabFromWelcome(t){hideWelcome();showTab(t);}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    closeIOPopup();
+    const ov=document.getElementById('welcome-overlay');
+    if(ov&&!ov.classList.contains('hidden'))hideWelcome();
+  }
+});
 
 /* ── Session popup ─────────────────────────────────────── */
 function toggleIOPopup(){
@@ -1959,6 +2034,7 @@ if(getEmbeddedToken()){
   apiInput.value='token-projectte-gomulu';
   apiInput.placeholder='Proje ici token aktif';
 }
+showWelcome();
 </script>
 </body>
 </html>
