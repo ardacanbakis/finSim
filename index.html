@@ -127,6 +127,8 @@ h3{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:
 .loan-actions{display:flex;align-items:center;gap:8px;justify-content:flex-end;margin-top:6px;flex-wrap:wrap;}
 .sub-btn{padding:7px 10px;border:none;border-radius:10px;background:var(--color-background-info);color:var(--color-text-info);font-size:11px;font-weight:600;cursor:pointer;}
 .danger-btn{padding:7px 10px;border:none;border-radius:10px;background:var(--color-background-danger);color:var(--color-text-danger);font-size:11px;font-weight:600;cursor:pointer;}
+.zero-btn{padding:2px 7px;border:1px solid var(--color-border-secondary);border-radius:6px;background:transparent;color:var(--color-text-tertiary);font-size:11px;font-weight:600;cursor:pointer;line-height:1.4;}
+.zero-btn:hover{background:var(--color-background-danger);color:var(--color-text-danger);border-color:var(--color-border-danger,var(--color-border-secondary));}
 .budget-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(320px,0.8fr);gap:14px;}
 .stack{display:flex;flex-direction:column;gap:12px;}
 .chart-switch{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 12px;}
@@ -348,6 +350,13 @@ body[data-theme="light"] .wov{background:radial-gradient(circle at top,rgba(37,1
           <div class="rrow"><input type="range" id="mt" min="60" max="240" step="12" value="120" oninput="handleRangeInput('mt', this.value, calcMort, 0, ' ay', v=>v+' ay ('+Math.round(v/12)+' yıl)')"><input type="number" id="mtN" min="60" max="240" step="12" value="120" oninput="handleNumberInput('mt', this.value, calcMort, 0, ' ay', v=>v+' ay ('+Math.round(v/12)+' yıl)')"><span class="rval" id="mtV">120 ay (10 yıl)</span></div>
           <div class="input-warn" id="mtW">60 ile 240 arasında, 12 ay artışlarla girin.</div>
         </div>
+        <div class="field">
+          <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
+            <label style="flex:0 0 auto;margin:0;">Balon ödeme (₺)</label>
+            <input type="number" id="balloon" value="0" min="0" step="100000" style="width:160px;" oninput="calcMort()" placeholder="0 = standart">
+            <span style="font-size:11px;color:var(--color-text-tertiary);">Vade sonunda ödenecek tutar</span>
+          </div>
+        </div>
         <div class="ibox">
           <div style="font-size:11px;margin-bottom:3px;">Aylık taksit</div>
           <div style="font-size:20px;font-weight:500;" id="mort-pay">₺—</div>
@@ -394,6 +403,7 @@ body[data-theme="light"] .wov{background:radial-gradient(circle at top,rgba(37,1
       <div class="inline-actions" style="margin-top:0;margin-bottom:8px;">
         <button class="sub-btn" id="open-all-btn" onclick="setAllCategories(true)">Tumunu ac</button>
         <button class="sub-btn" id="close-all-btn" onclick="setAllCategories(false)">Tumunu kapat</button>
+        <button class="sub-btn" id="guide-btn" onclick="showWelcome()" style="margin-left:auto;opacity:.7;">👋 Kılavuz</button>
       </div>
       <div class="helper" style="margin-bottom:8px;">Bu alan tek basina sag kolonda durur. Her kalemde slideri veya sayisal girisi kullanabilirsiniz.</div>
       <div id="exp-cats"></div>
@@ -724,6 +734,7 @@ body[data-theme="light"] .wov{background:radial-gradient(circle at top,rgba(37,1
       <img src="finsim_logo_dark.svg" id="wov-logo" class="wov-logo" alt="finSim">
       <h1 class="wov-title">Türkiye'de ev, araba ve aylık hayat masraflarını tek tabloda planlayın.</h1>
       <p class="wov-sub">USD geliriniz, TRY giderleriniz, konut krediniz, araç finansmanınız ve kur senaryolarınızı birbirine bağlar. Kendi gelir, kredi, peşinat ve aylık harcama bilgilerinizi girin; CollectAPI tekliflerini seçerek aylık taksitleri doğrudan ana bütçeye taşıyın.</p>
+      <button class="wov-cta" style="margin:1.2rem auto 0;" onclick="hideWelcome()">Bütçeye Başla →</button>
     </div>
 
     <div class="wov-section-lbl">Nasıl kullanılır?</div>
@@ -975,7 +986,8 @@ function applyStaticLanguage(lang){
       'report-trend-explainer':"The 12-month overview projects how income and expenses may drift apart under current assumptions. It is not meant to be a precise forecast; it is meant to surface pressure early if recurring costs begin to outpace income.",
       'tpl-status':"This template is optional. It creates a starting point and every field remains editable afterward.",
       'open-all-btn':'Open all',
-      'close-all-btn':'Close all'
+      'close-all-btn':'Close all',
+      'guide-btn':'👋 Guide'
     };
     Object.entries(map).forEach(([id,val])=>{const el=document.getElementById(id); if(el) el.textContent=val;});
   }else if(trStaticSnapshot){
@@ -995,7 +1007,8 @@ function applyStaticLanguage(lang){
       'report-trend-explainer':'12 aylik genel gorunum, gelir ve gider trendlerinin mevcut varsayimlarla nasil ayrisabilecegini gosterir. Buradaki amac kesin tahmin vermek degil; giderler geliri gecmeye baslarsa bunu onceden fark ettirmektir.',
       'tpl-status':'Bu taslak istege baglidir. Baslangic noktasi uretir, sonra tum alanlar tek tek duzenlenebilir.',
       'open-all-btn':'Tumunu ac',
-      'close-all-btn':'Tumunu kapat'
+      'close-all-btn':'Tumunu kapat',
+      'guide-btn':'👋 Kılavuz'
     };
     Object.entries(map).forEach(([id,val])=>{const el=document.getElementById(id); if(el) el.textContent=val;});
   }
@@ -1342,7 +1355,16 @@ async function fetchCollectRates(){
 }
 
 function buildCats(){
-  const el=document.getElementById('exp-cats');el.innerHTML='';
+  const el=document.getElementById('exp-cats');
+  // Capture current DOM values before rebuild to prevent reset on open/close
+  const live={};
+  CATS.forEach(cat=>{
+    [...cat.items,...(extraItemsByCat[cat.key]||[])].filter(it=>!it.fixed).forEach(it=>{
+      const r=document.getElementById('r_'+it.k);
+      if(r)live[it.k]=parseFloat(r.value);
+    });
+  });
+  el.innerHTML='';
   CATS.forEach(cat=>{
     const catItems=[...cat.items,...(extraItemsByCat[cat.key]||[])];
     const isOpen=openCats[cat.key]!==false;
@@ -1353,19 +1375,20 @@ function buildCats(){
         <span class="cat-name">${categoryName(cat.key,cat.name)}</span>
       </div>
       <div style="display:flex;align-items:center;gap:6px;">
+        <button class="zero-btn" onclick="event.stopPropagation();setCatToZero('${cat.key}')" title="${txt('Sıfıra al','Reset to 0')}">0</button>
         <span style="font-size:13px;font-weight:500;color:var(--color-text-secondary);" id="ctot-${cat.key}">₺0</span>
         <span style="font-size:10px;color:var(--color-text-tertiary);transition:transform .2s;" id="carr-${cat.key}" style="transform:${isOpen?'rotate(90deg)':''}">▶</span>
       </div>
     </div>
     <div id="cbody-${cat.key}" class="cat-body" style="display:${isOpen?'block':'none'}">
-      ${catItems.filter(it=>!it.fixed).map(it=>`<div class="sub-item">
+      ${catItems.filter(it=>!it.fixed).map(it=>{const val=live[it.k]??it.v;return`<div class="sub-item">
         <span class="sub-nm">${itemName(it.k,it.n)}</span>
-        <input type="range" min="0" max="${it.max||8000}" step="100" value="${it.v}" id="r_${it.k}" style="flex:1;" oninput="handleExpenseRange('${it.k}', this.value)">
-        <input type="number" min="0" max="${it.max||8000}" step="100" value="${it.v}" id="n_${it.k}" style="width:96px;" oninput="handleExpenseNumber('${it.k}', this.value)">
-        <span class="sub-val" id="v_${it.k}">${f(it.v)}</span>
+        <input type="range" min="0" max="${it.max||8000}" step="100" value="${val}" id="r_${it.k}" style="flex:1;" oninput="handleExpenseRange('${it.k}', this.value)">
+        <input type="number" min="0" max="${it.max||8000}" step="100" value="${val}" id="n_${it.k}" style="width:96px;" oninput="handleExpenseNumber('${it.k}', this.value)">
+        <span class="sub-val" id="v_${it.k}">${f(val)}</span>
         ${(it.custom&&cat.key==='other')?`<button class="danger-btn" onclick="removeCustomExpenseItem('${cat.key}','${it.k}')">${txt('Sil','Delete')}</button>`:''}
         <div class="input-warn" id="w_${it.k}" style="flex-basis:100%;margin-left:163px;">0 ile ${f(it.max||8000)} arasında, 100 artışlarla girin.</div>
-      </div>`).join('')}
+      </div>`;}).join('')}
       ${cat.key==='other'?`<div class="add-row">
         <input type="text" id="new-other-name" placeholder="${txt('Yeni duzenli gider adi','New recurring expense name')}">
         <input type="number" id="new-other-value" min="0" step="100" value="1000" style="width:110px;">
@@ -1374,6 +1397,20 @@ function buildCats(){
     </div>`;
     el.appendChild(div);
   });
+}
+
+function setCatToZero(key){
+  const cat=CATS.find(c=>c.key===key);
+  if(!cat)return;
+  [...cat.items,...(extraItemsByCat[key]||[])].filter(it=>!it.fixed).forEach(it=>{
+    const r=document.getElementById('r_'+it.k);
+    const n=document.getElementById('n_'+it.k);
+    const v=document.getElementById('v_'+it.k);
+    if(r)r.value=0;
+    if(n)n.value=0;
+    if(v)v.textContent=f(0);
+  });
+  calc();
 }
 
 function toggleCat(key){
@@ -1477,22 +1514,26 @@ function fxChange(v){
 }
 
 function calcMort(){
-  const hp=parseFloat(document.getElementById('hp').value)||0;
-  const dp=parseFloat(document.getElementById('dp').value)||0;
-  const r=parseFloat(document.getElementById('mr').value)/100;
-  const n=parseInt(document.getElementById('mt').value);
-  const mtN=document.getElementById('mtN');if(mtN)mtN.value=n;
+  const hp=parseFloat(document.getElementById(‘hp’).value)||0;
+  const dp=parseFloat(document.getElementById(‘dp’).value)||0;
+  const r=parseFloat(document.getElementById(‘mr’).value)/100;
+  const n=parseInt(document.getElementById(‘mt’).value);
+  const balloon=parseFloat(document.getElementById(‘balloon’)?.value)||0;
+  const mtN=document.getElementById(‘mtN’);if(mtN)mtN.value=n;
   const loan=Math.max(0,hp-dp);
-  clearOfferIfMismatch('house',loan,n);
-  if(loan<=0){mortPay=0;document.getElementById('mort-pay').textContent='₺0';document.getElementById('mort-det').textContent=txt('Peşinat evi karşılıyor.','The down payment fully covers the home.');document.getElementById('mort-usd-cost').textContent='';calc();return;}
-  const amortized=loan*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+  clearOfferIfMismatch(‘house’,loan,n);
+  if(loan<=0){mortPay=0;document.getElementById(‘mort-pay’).textContent=’₺0’;document.getElementById(‘mort-det’).textContent=txt(‘Peşinat evi karşılıyor.’,’The down payment fully covers the home.’);document.getElementById(‘mort-usd-cost’).textContent=’’;calc();return;}
+  // Balloon: P = (L - B/(1+r)^n) * r*(1+r)^n / ((1+r)^n - 1)
+  const factor=Math.pow(1+r,n);
+  const effectiveLoan=balloon>0?loan-balloon/factor:loan;
+  const amortized=effectiveLoan*r*factor/(factor-1);
   mortPay=selectedOffers.house?.monthly||amortized;
   const fx=getFX();
-  document.getElementById('mort-pay').textContent=f(mortPay);
-  const totalPay=selectedOffers.house?.total||mortPay*n;
-  document.getElementById('mort-det').textContent=`${txt('Kredi','Loan')}: ${f(loan)} · ${txt('Toplam','Total')}: ${f(totalPay)} · ${txt('Faiz yükü','Interest burden')}: ${f(totalPay-loan)}`;
-  document.getElementById('mort-usd-cost').textContent=`${txt('Bugünkü kurda','At today’s FX')}: ${fd(mortPay/fx)}/ay`;
-  document.getElementById('mort-source').textContent=selectedOffers.house?`${txt('Secili teklif','Selected offer')}: ${selectedOffers.house.label}`:txt('Elle girilen kredi varsayimi kullaniliyor.','Using manual mortgage assumptions.');
+  document.getElementById(‘mort-pay’).textContent=f(mortPay);
+  const totalPay=selectedOffers.house?.total||(mortPay*n+balloon);
+  document.getElementById(‘mort-det’).textContent=`${txt(‘Kredi’,’Loan’)}: ${f(loan)} · ${txt(‘Toplam’,’Total’)}: ${f(totalPay)} · ${txt(‘Faiz yükü’,’Interest burden’)}: ${f(totalPay-loan)}${balloon>0?’ · Balon: ‘+f(balloon):’’}`;
+  document.getElementById(‘mort-usd-cost’).textContent=`${txt(‘Bugünkü kurda’,’At today’s FX’)}: ${fd(mortPay/fx)}/ay`;
+  document.getElementById(‘mort-source’).textContent=selectedOffers.house?`${txt(‘Secili teklif’,’Selected offer’)}: ${selectedOffers.house.label}`:txt(‘Elle girilen kredi varsayimi kullaniliyor.’,’Using manual mortgage assumptions.’);
   calc();
 }
 
@@ -1721,19 +1762,34 @@ function curCalc(){
       <div class="mcard"><div class="mlbl">${txt('9 aylık (tek gelir min.)','9-month (single-income minimum)')}</div><div class="mval a">${fd(monthlyExp/fx*9)}</div><div class="msub">${txt('Önerilen minimum','Recommended minimum')}</div></div>
       <div class="mcard"><div class="mlbl">${txt('12 aylık (ideal)','12-month (ideal)')}</div><div class="mval g">${fd(monthlyExp/fx*12)}</div><div class="msub">${txt('Tek gelir için ideal','Ideal for single income')}</div></div>
     </div>`;
+  updateCurrencyCharts();
 }
 
+let _curChart=null,_impactChart=null;
 function initCurrencyCharts(){
   const fxVals=[35,40,43.5,50,55,60,65,70];
-  const exp=80000;const usd=2500;
+  const exp=budgetSnapshot.grandExp||80000;const usd=budgetSnapshot.usd||2500;
   const convertData=fxVals.map(r=>Math.max(0,exp/r));
   const holdData=fxVals.map(r=>Math.max(0,usd-exp/r));
-  new Chart(document.getElementById('curChart'),{type:'line',data:{labels:fxVals.map(r=>'₺'+r),datasets:[{label:'Çevrilmesi gereken USD',data:convertData.map(v=>Math.round(v)),borderColor:'#E24B4A',backgroundColor:'rgba(226,75,74,0.08)',tension:0.3,fill:true,pointRadius:5},{label:'USD\'de tutulabilecek',data:holdData.map(v=>Math.max(0,Math.round(v))),borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,0.07)',tension:0.3,fill:true,pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': $'+ctx.raw}}},scales:{y:{ticks:{callback:v=>'$'+v}},x:{title:{display:true,text:'USD/TRY kuru'}}}}});
+  _curChart=new Chart(document.getElementById('curChart'),{type:'line',data:{labels:fxVals.map(r=>'₺'+r),datasets:[{label:'Çevrilmesi gereken USD',data:convertData.map(v=>Math.round(v)),borderColor:'#E24B4A',backgroundColor:'rgba(226,75,74,0.08)',tension:0.3,fill:true,pointRadius:5},{label:'USD\'de tutulabilecek',data:holdData.map(v=>Math.max(0,Math.round(v))),borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,0.07)',tension:0.3,fill:true,pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': $'+ctx.raw}}},scales:{y:{ticks:{callback:v=>'$'+v}},x:{title:{display:true,text:'USD/TRY kuru'}}}}});
 
   const fxRange=[35,38,40,43.5,47,50,55,60];
-  const incTRY=fxRange.map(r=>2500*r);
-  const expFixed=fxRange.map(()=>80000);
-  new Chart(document.getElementById('impactChart'),{type:'line',data:{labels:fxRange.map(r=>'₺'+r),datasets:[{label:'Geliriniz (TRY)',data:incTRY,borderColor:'#378ADD',backgroundColor:'rgba(55,138,221,0.08)',tension:0.3,fill:true,pointRadius:5},{label:'Sabit giderler (TRY)',data:expFixed,borderColor:'#E24B4A',backgroundColor:'transparent',tension:0.3,borderDash:[5,3],pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': ₺'+ctx.raw.toLocaleString('tr-TR')}}},scales:{y:{ticks:{callback:v=>'₺'+Math.round(v/1000)+'K'}}}}});
+  const incTRY=fxRange.map(r=>usd*r);
+  const expFixed=fxRange.map(()=>exp);
+  _impactChart=new Chart(document.getElementById('impactChart'),{type:'line',data:{labels:fxRange.map(r=>'₺'+r),datasets:[{label:'Geliriniz (TRY)',data:incTRY,borderColor:'#378ADD',backgroundColor:'rgba(55,138,221,0.08)',tension:0.3,fill:true,pointRadius:5},{label:'Sabit giderler (TRY)',data:expFixed,borderColor:'#E24B4A',backgroundColor:'transparent',tension:0.3,borderDash:[5,3],pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': ₺'+ctx.raw.toLocaleString('tr-TR')}}},scales:{y:{ticks:{callback:v=>'₺'+Math.round(v/1000)+'K'}}}}});
+}
+
+function updateCurrencyCharts(){
+  if(!_curChart||!_impactChart)return;
+  const fxVals=[35,40,43.5,50,55,60,65,70];
+  const exp=budgetSnapshot.grandExp||80000;const usd=budgetSnapshot.usd||2500;
+  _curChart.data.datasets[0].data=fxVals.map(r=>Math.round(Math.max(0,exp/r)));
+  _curChart.data.datasets[1].data=fxVals.map(r=>Math.max(0,Math.round(usd-exp/r)));
+  _curChart.update();
+  const fxRange=[35,38,40,43.5,47,50,55,60];
+  _impactChart.data.datasets[0].data=fxRange.map(r=>usd*r);
+  _impactChart.data.datasets[1].data=fxRange.map(()=>exp);
+  _impactChart.update();
 }
 
 function initInflCharts(){
@@ -1818,20 +1874,27 @@ function initRisk(){
   ];
   document.getElementById('risk-items').innerHTML=risks.map(r=>`<div class="risk-item"><span style="font-size:13px;">${r.label}<br><span style="font-size:11px;color:var(--color-text-tertiary);">${r.detail}</span></span><span class="badge ${r.level}">${r.level==='ok'?'Düşük':r.level==='warn'?'Orta':'Yüksek'}</span></div>`).join('');
 
+  renderStressTest();
+}
+
+function renderStressTest(){
+  const usd=budgetSnapshot.usd||2500;
+  const baseExp=budgetSnapshot.grandExp||80000;
   const stresses=[
-    {label:'Kur 35\'e düşer (TRY güçlenir)',income:2500*35,exp:80000},
-    {label:'Kur 43.5 (bugün)',income:2500*43.5,exp:80000},
-    {label:'Kur 55\'e yükselir',income:2500*55,exp:95000},
-    {label:'Kur 70\'e yükselir (kötümser)',income:2500*70,exp:112000},
-    {label:'1 ay gelir kesilir (kredi ödenecek)',income:0,exp:80000},
+    {label:'Kur 35\'e düşer (TRY güçlenir)',income:usd*35,exp:baseExp},
+    {label:'Kur '+((budgetSnapshot.fx||43.5).toFixed(1))+' (bugün)',income:usd*(budgetSnapshot.fx||43.5),exp:baseExp},
+    {label:'Kur 55\'e yükselir',income:usd*55,exp:Math.round(baseExp*1.06)},
+    {label:'Kur 70\'e yükselir (kötümser)',income:usd*70,exp:Math.round(baseExp*1.14)},
+    {label:'1 ay gelir kesilir (kredi ödenecek)',income:0,exp:baseExp},
   ];
   document.getElementById('stress-test').innerHTML=`<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:0;font-size:11px;color:var(--color-text-tertiary);padding:4px 0;border-bottom:0.5px solid var(--color-border-secondary);font-weight:500;"><span>Senaryo</span><span style="text-align:right">Gelir (TRY)</span><span style="text-align:right">Gider (TRY)</span><span style="text-align:right">Bakiye</span></div>`+stresses.map(s=>{const bal=s.income-s.exp;const ok=bal>0;return`<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:0;padding:6px 4px;font-size:12px;border-bottom:0.5px solid var(--color-border-tertiary);"><span style="font-weight:500;">${s.label}</span><span style="text-align:right;">${f(s.income)}</span><span style="text-align:right;">${f(s.exp)}</span><span style="text-align:right;font-weight:500;color:${ok?'var(--color-text-success)':'var(--color-text-danger)'};">${f(bal)}</span></div>`;}).join('');
 }
 
 function riskCalc(){
+  renderStressTest();
   const p=parseFloat(document.getElementById('risk-partner').value)||1000;
   const m=parseInt(document.getElementById('risk-months').value)||12;
-  const fx=43.5;
+  const fx=budgetSnapshot.fx||43.5;
   const addTRY=p*fx;
   document.getElementById('unlock-result').innerHTML=`<div class="cards3" style="margin-bottom:0;"><div class="mcard"><div class="mlbl">Ek aylık gelir</div><div class="mval g">${f(addTRY)}</div><div class="msub">${fd(p)}/ay</div></div><div class="mcard"><div class="mlbl">${m} ay içinde toplam ek</div><div class="mval g">${f(addTRY*m)}</div><div class="msub">Acil fon veya peşinat</div></div><div class="mcard"><div class="mlbl">Alınabilecek maks. ek kredi</div><div class="mval g">${f(addTRY*0.4/0.03*Math.pow(1.03,120)/(Math.pow(1.03,120)-1))}</div><div class="msub">Gelir oranı %40 kuralı</div></div></div>`;
 }
@@ -1891,7 +1954,7 @@ document.addEventListener('click',e=>{
 const STATE_STORAGE_KEY='budget-codex-state';
 let _saveTimer=null;
 
-const SIMPLE_FIELDS=['usd1','usd2','usd2fut','try-ext','hp','dp','car-price','car-dp',
+const SIMPLE_FIELDS=['usd1','usd2','usd2fut','try-ext','hp','dp','balloon','car-price','car-dp',
   'cur-exp','cur-usd','risk-partner','sim-hp','sim-dp','sim-usd',
   'api-house-amount','api-house-term','api-car-amount','api-car-term'];
 

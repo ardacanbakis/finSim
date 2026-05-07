@@ -1,6 +1,5 @@
 window.BUDGET_LANG_EN = {
   tabs: [
-    "👋 Welcome",
     "💰 Budget",
     "📊 Reports",
     "💱 FX Strategy",
@@ -10,10 +9,7 @@ window.BUDGET_LANG_EN = {
     "🛡 Risk Analysis"
   ],
   h3: [
-    "How to use this page",
-    "What does this warning mean?",
-    "What does each tab do?",
-    "Quick setup questionnaire",
+    "Quick Setup",
     "Income",
     "Home Loan",
     "Vehicle Financing",
@@ -32,13 +28,13 @@ window.BUDGET_LANG_EN = {
     "How exchange-rate changes affect your budget",
     "Annual TurkStat inflation (2020-2026)",
     "USD/TRY history (2020-2026)",
-    "TRY value of your $2,500 income in past years",
+    "TRY value of your income in past years",
     "Loss of purchasing power of TRY 10,000 (2020-2026)",
     "USD/TRY projection 2026-2031",
-    "TRY value of your $2,500 income 2026-2031",
+    "TRY value of your income 2026-2031",
     "Real USD cost of your loan payment 2026-2031",
     "Budget impact when partner income unlocks",
-    "Scenario comparison - $2,500 income, ~43.5 FX",
+    "Scenario comparison",
     "Total payment comparison",
     "Monthly installment (TRY and USD)",
     "Recommendations for USD earners",
@@ -68,6 +64,7 @@ window.BUDGET_LANG_EN = {
     "Down payment (TRY)",
     "Monthly interest (%)",
     "Term",
+    "Balloon payment (TRY)",
     "Vehicle price (TRY)",
     "Down payment (TRY)",
     "Monthly interest (%)",
@@ -128,8 +125,7 @@ window.BUDGET_LANG_EN = {
     "Tests how resilient your budget is under income shocks, FX drops, and unexpected expenses."
   ],
   welcomeTips: [
-    "<b>Explanation:</b> This warning assumes the household depends mainly on a single earner. If FX rises, your TRY income improves; if income is interrupted or a large expense appears, there is no second income buffer.",
-    "This is why the planner interprets debt-to-income ratios more conservatively, recommends a 9-12 month emergency fund, and centers risk analysis on a single-income scenario.",
+    "<b>Note:</b> This warning assumes the household depends mainly on a single USD earner. If FX rises, your TRY income improves; if income is interrupted or a large expense appears, there is no second income buffer. This is why the planner interprets debt-to-income ratios more conservatively, recommends a 9-12 month emergency fund, and centers risk analysis on a single-income scenario.",
     "<b>Who is this for?</b> This section creates a quick starter template for first-time users. It does not change your default values unless the apply button is used."
   ],
   welcomeHelpers: [
