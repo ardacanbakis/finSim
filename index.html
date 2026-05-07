@@ -194,9 +194,9 @@ body[data-theme="light"]{background:radial-gradient(circle at top, rgba(37,103,1
 .loan-meta{font-size:11px;color:var(--color-text-tertiary);text-align:right;line-height:1.5;}
 .api-note{font-size:11px;color:var(--color-text-tertiary);margin-top:8px;line-height:1.45;}
 @media (max-width:900px){.api-grid{grid-template-columns:1fr;}}
-/* welcome overlay */
-.wov{position:fixed;inset:0;z-index:300;overflow-y:auto;-webkit-overflow-scrolling:touch;background:radial-gradient(circle at top,rgba(86,156,214,0.09),transparent 30%),linear-gradient(180deg,#0f141b 0%,#141b23 100%);}
-body[data-theme="light"] .wov{background:radial-gradient(circle at top,rgba(37,103,167,0.1),transparent 30%),linear-gradient(180deg,#f4f8fc 0%,#eef3f8 100%);}
+/* welcome overlay — force light text so overlay is readable regardless of theme timing */
+.wov{--color-text-primary:#eef4fb;--color-text-secondary:#b8c8da;--color-text-tertiary:#6f8296;--color-background-primary:#1c2535;--color-border-tertiary:rgba(255,255,255,0.07);position:fixed;inset:0;z-index:300;overflow-y:auto;-webkit-overflow-scrolling:touch;background:radial-gradient(circle at top,rgba(86,156,214,0.09),transparent 30%),linear-gradient(180deg,#0f141b 0%,#141b23 100%);}
+body[data-theme="light"] .wov{background:radial-gradient(circle at top,rgba(37,103,167,0.1),transparent 30%),linear-gradient(180deg,#f4f8fc 0%,#eef3f8 100%);--color-text-primary:#172331;--color-text-secondary:#3d5168;--color-text-tertiary:#6f8296;--color-background-primary:#ffffff;--color-border-tertiary:rgba(0,0,0,0.08);}
 .wov.hidden{display:none;}
 .wov-inner{max-width:920px;margin:0 auto;padding:3rem 1.5rem 5rem;}
 .wov-hero{text-align:center;padding:2rem 0 2.5rem;}
@@ -258,7 +258,7 @@ body[data-theme="light"] .wov{background:radial-gradient(circle at top,rgba(37,1
 }
 </style>
 </head>
-<body>
+<body data-theme="dark">
 
 <div class="tabs">
   <button class="logo-nav-btn" onclick="toggleWelcome()" title="Hoş geldin sayfasına dön">
@@ -734,7 +734,7 @@ body[data-theme="light"] .wov{background:radial-gradient(circle at top,rgba(37,1
       <img src="finsim_logo_dark.svg" id="wov-logo" class="wov-logo" alt="finSim">
       <h1 class="wov-title">Türkiye'de ev, araba ve aylık hayat masraflarını tek tabloda planlayın.</h1>
       <p class="wov-sub">USD geliriniz, TRY giderleriniz, konut krediniz, araç finansmanınız ve kur senaryolarınızı birbirine bağlar. Kendi gelir, kredi, peşinat ve aylık harcama bilgilerinizi girin; CollectAPI tekliflerini seçerek aylık taksitleri doğrudan ana bütçeye taşıyın.</p>
-      <button class="wov-cta" style="margin:1.2rem auto 0;" onclick="hideWelcome()">Bütçeye Başla →</button>
+      <button class="wov-cta" style="margin:1.2rem auto 0;" onclick="showTabFromWelcome('budget')">Bütçeye Başla →</button>
     </div>
 
     <div class="wov-section-lbl">Nasıl kullanılır?</div>
@@ -775,7 +775,7 @@ body[data-theme="light"] .wov{background:radial-gradient(circle at top,rgba(37,1
       </div>
     </div>
 
-    <button class="wov-cta" onclick="hideWelcome()">Bütçeye Başla →</button>
+    <button class="wov-cta" onclick="showTabFromWelcome('budget')">Bütçeye Başla →</button>
 
   </div>
 </div>
