@@ -1494,14 +1494,14 @@ function applyDeepTranslations(){
     '#pane-projection .sc-mid .sc-rate':'18-22% yearly',
     '#pane-projection .sc-mid .sc-desc':'The current trend continues. Inflation settles around 20-25% and FX keeps rising gradually.',
     '#pane-projection .card:nth-of-type(2) .tip':'<b>The downside paradox:</b> The more TRY weakens, the cheaper your fixed TRY installment becomes in USD terms. Over five years, a home payment can shrink dramatically in USD cost.',
-    '#pane-projection .card:nth-of-type(3) .tip':'<b>When partner income starts:</b> even under the bearish scenario, extra USD income creates major breathing room. Every extra $500 adds meaningful TRY capacity at today’s FX.',
+    '#pane-projection .card:nth-of-type(3) .tip':'<b>When partner income starts:</b> even under the bearish scenario, extra USD income creates major breathing room. Every extra $500 adds meaningful TRY capacity at today\'s FX.',
     '#pane-mortgage .card:nth-of-type(2) .tip:nth-of-type(1)':'<b>1. Prefer longer maturities (15-20 years):</b> as TRY weakens, later installments become dramatically cheaper in USD terms.',
     '#pane-mortgage .card:nth-of-type(2) .tip:nth-of-type(2)':'<b>2. Keep the down payment moderate:</b> excess cash may work harder in USD savings or investments than it does as early debt reduction.',
     '#pane-mortgage .card:nth-of-type(2) .tip:nth-of-type(3)':'<b>3. Fixed-rate TRY debt:</b> avoid FX-linked or variable-rate structures. Fixed TRY installments are the most predictable.',
     '#pane-mortgage .card:nth-of-type(2) .tip:nth-of-type(4)':'<b>4. Do not rush early repayment:</b> if TRY keeps weakening, the real burden of the debt naturally falls over time.',
     '#pane-mortgage .card:nth-of-type(2) .tip:nth-of-type(5)':'<b>5. Single-income buffer is mandatory:</b> installment plus living costs should still leave enough monthly breathing room.',
     '#pane-mortgage .card:nth-of-type(2) .tip:nth-of-type(6)':'<b>6. Wait for lower rates?</b> if monthly mortgage rates fall meaningfully, total long-term savings can be very large.',
-    '#pane-mortgage .card:last-child .helper':'The apply-to-budget button writes the selected offer’s rate, term, and monthly payment into the main home or vehicle finance cards.',
+    '#pane-mortgage .card:last-child .helper':'The apply-to-budget button writes the selected offer\'s rate, term, and monthly payment into the main home or vehicle finance cards.',
     '#pane-risk .unlock-box > div':'Once your partner starts earning, overall risk drops significantly. This is one of the strongest medium-term arguments in favor of buying a home.',
   }:{};
   Object.entries(map).forEach(([selector,val])=>{const el=document.querySelector(selector); if(el) el.innerHTML=val;});
@@ -1514,26 +1514,26 @@ function fxChange(v){
 }
 
 function calcMort(){
-  const hp=parseFloat(document.getElementById(‘hp’).value)||0;
-  const dp=parseFloat(document.getElementById(‘dp’).value)||0;
-  const r=parseFloat(document.getElementById(‘mr’).value)/100;
-  const n=parseInt(document.getElementById(‘mt’).value);
-  const balloon=parseFloat(document.getElementById(‘balloon’)?.value)||0;
-  const mtN=document.getElementById(‘mtN’);if(mtN)mtN.value=n;
+  const hp=parseFloat(document.getElementById('hp').value)||0;
+  const dp=parseFloat(document.getElementById('dp').value)||0;
+  const r=parseFloat(document.getElementById('mr').value)/100;
+  const n=parseInt(document.getElementById('mt').value);
+  const balloon=parseFloat(document.getElementById('balloon')?.value)||0;
+  const mtN=document.getElementById('mtN');if(mtN)mtN.value=n;
   const loan=Math.max(0,hp-dp);
-  clearOfferIfMismatch(‘house’,loan,n);
-  if(loan<=0){mortPay=0;document.getElementById(‘mort-pay’).textContent=’₺0’;document.getElementById(‘mort-det’).textContent=txt(‘Peşinat evi karşılıyor.’,’The down payment fully covers the home.’);document.getElementById(‘mort-usd-cost’).textContent=’’;calc();return;}
+  clearOfferIfMismatch('house',loan,n);
+  if(loan<=0){mortPay=0;document.getElementById('mort-pay').textContent='₺0';document.getElementById('mort-det').textContent=txt('Peşinat evi karşılıyor.','The down payment fully covers the home.');document.getElementById('mort-usd-cost').textContent='';calc();return;}
   // Balloon: P = (L - B/(1+r)^n) * r*(1+r)^n / ((1+r)^n - 1)
   const factor=Math.pow(1+r,n);
   const effectiveLoan=balloon>0?loan-balloon/factor:loan;
   const amortized=effectiveLoan*r*factor/(factor-1);
   mortPay=selectedOffers.house?.monthly||amortized;
   const fx=getFX();
-  document.getElementById(‘mort-pay’).textContent=f(mortPay);
+  document.getElementById('mort-pay').textContent=f(mortPay);
   const totalPay=selectedOffers.house?.total||(mortPay*n+balloon);
-  document.getElementById(‘mort-det’).textContent=`${txt(‘Kredi’,’Loan’)}: ${f(loan)} · ${txt(‘Toplam’,’Total’)}: ${f(totalPay)} · ${txt(‘Faiz yükü’,’Interest burden’)}: ${f(totalPay-loan)}${balloon>0?’ · Balon: ‘+f(balloon):’’}`;
-  document.getElementById(‘mort-usd-cost’).textContent=`${txt(‘Bugünkü kurda’,’At today’s FX’)}: ${fd(mortPay/fx)}/ay`;
-  document.getElementById(‘mort-source’).textContent=selectedOffers.house?`${txt(‘Secili teklif’,’Selected offer’)}: ${selectedOffers.house.label}`:txt(‘Elle girilen kredi varsayimi kullaniliyor.’,’Using manual mortgage assumptions.’);
+  document.getElementById('mort-det').textContent=`${txt('Kredi','Loan')}: ${f(loan)} · ${txt('Toplam','Total')}: ${f(totalPay)} · ${txt('Faiz yükü','Interest burden')}: ${f(totalPay-loan)}${balloon>0?' · Balon: '+f(balloon):''}`;
+  document.getElementById('mort-usd-cost').textContent=`${txt('Bugünkü kurda','At today\'s FX')}: ${fd(mortPay/fx)}/ay`;
+  document.getElementById('mort-source').textContent=selectedOffers.house?`${txt('Secili teklif','Selected offer')}: ${selectedOffers.house.label}`:txt('Elle girilen kredi varsayimi kullaniliyor.','Using manual mortgage assumptions.');
   calc();
 }
 
@@ -1552,7 +1552,7 @@ function calcCar(){
   const fx=getFX();
   document.getElementById('car-pay').textContent=f(carPay);
   document.getElementById('car-det').textContent=`${txt('Kredi','Loan')}: ${f(loan)} · ${txt('Toplam','Total')}: ${f(totalPay)} · ${txt('Faiz yükü','Interest burden')}: ${f(totalPay-loan)}`;
-  document.getElementById('car-usd-cost').textContent=`${txt('Bugünkü kurda','At today’s FX')}: ${fd(carPay/fx)}/ay`;
+  document.getElementById('car-usd-cost').textContent=`${txt('Bugünkü kurda','At today\'s FX')}: ${fd(carPay/fx)}/ay`;
   document.getElementById('car-source').textContent=selectedOffers.car?`${txt('Secili teklif','Selected offer')}: ${selectedOffers.car.label}`:txt('Elle girilen taşıt kredisi varsayimi kullaniliyor.','Using manual vehicle-loan assumptions.');
   syncApiCarInputs();
   calc();
