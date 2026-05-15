@@ -1,103 +1,92 @@
-# Turkey Budget Planner — finSim
+# finSim — Turkey Budget Planner
 
-Single-file budgeting and scenario-planning dashboard for a USD-income household in Turkey. The page connects income, exchange rate, housing finance, vehicle finance, monthly living costs, and risk scenarios into one shared model.
+**A financial planning dashboard for USD-income households in Turkey.**
 
-**Live demo:** [ardacanbakis.github.io/finSim](https://ardacanbakis.github.io/finSim/)
+Plan a home purchase, vehicle financing, and monthly life in one connected view — with live exchange rates, inflation history, forward projections, and risk analysis all linked to a single set of inputs.
 
-## Main Idea
+**Live:** [ardacanbakis.github.io/finSim](https://ardacanbakis.github.io/finSim/)
 
-The planner is designed to answer one question as realistically as possible:
+---
 
-"If we buy a house and possibly a car in Turkey, what does our monthly picture actually look like under today's rates and future currency scenarios?"
+## What It Does
 
-## What The App Includes
+finSim answers a single question as clearly as possible:
 
-- Welcome page (Başlangıç) that explains the workflow and risk assumptions — opens by default
-- Budget page for income, mortgage, vehicle finance, and all recurring expenses
-- Reports page for high-level overview with multiple graph views
-- Currency strategy page for monthly USD-to-TRY conversion and emergency-fund planning
-- Inflation history and forward projection pages
-- Mortgage optimization page with CollectAPI-powered loan comparisons
-- Risk analysis page with stress scenarios
+> *"If we buy a house and possibly a car in Turkey, what does our monthly picture actually look like — now and in five years?"*
 
-## How The Data Links Together
+Every number in the app flows from one source of truth: your income, your exchange rate, and your loan assumptions. Change one input and every chart, ratio, and recommendation updates instantly.
 
-- USD income, spouse income, extra TRY income, and FX rate drive total monthly income
-- Housing finance feeds the `Konut & Aidat` expense category
-- Vehicle finance feeds the `Ulaşım & Araç` expense category
-- Manual expense sliders add to the overall monthly spend
-- Slider-driven fields also support direct numeric entry with validation warnings
-- Total spend is reused in the currency strategy view
-- CollectAPI loan offers can be selected and imported back into the main budget cards
-- Selected API offers update interest rate, term, and monthly payment used by the budget
+---
 
-## Session State — No Backend Needed
+## Tabs
 
-All inputs are automatically saved to `localStorage` as you type. When you return to the page, your last session is restored exactly as you left it — no login, no server, no export required.
+### 💰 Budget
+The main input screen. Enter your USD income, an optional spouse income, and any extra TRY income (rental, freelance, etc.). Set the live USD/TRY rate, then fill in your mortgage and vehicle financing assumptions. Recurring expenses are broken into labeled categories — groceries, transport, health, subscriptions, and more — each with a slider and a direct number field. All figures flow through to every other tab automatically.
 
-Three buttons are always visible in the top navigation bar:
+### 📊 Reports
+A cross-section of your budget in chart form. Covers expense distribution, a debt and fixed-load report, FX sensitivity (how your balance changes as the rate shifts), and a 12-month cash-flow overview with an interpretive text summary.
 
-| Button | What it does |
-|--------|-------------|
-| 💾 Kaydet | Downloads a `.json` snapshot of every input and setting |
-| 🖨 PDF | Builds a formatted summary page and opens the browser print dialog (save as PDF) |
-| 📂 Yükle | Opens a file picker — select a previously saved `.json` to restore the full session |
+### 💱 FX Strategy
+Tells you how much USD to convert to TRY each month given your actual expenses, and what size emergency fund you need as a single-income household. Includes a scenario table showing required conversion amounts at several exchange rates and a chart showing how rate swings hit your monthly balance.
 
-The exported `.json` file is human-readable and fully re-importable. Use it to:
-- Back up a scenario before experimenting with new numbers
-- Share a session with someone else
-- Keep multiple named scenarios (e.g. `finsim-optimistic.json`, `finsim-conservative.json`)
+### 📈 Inflation History
+Puts today's numbers in context. Shows annual TurkStat inflation from 2020 to 2026, the USD/TRY rate over the same period, the TRY value of your income in each of those years, and the purchasing-power loss of a fixed TRY amount since 2020.
 
-## CollectAPI Integration
+### 🔮 Outlook
+Forward projections through 2031 across three exchange-rate scenarios (base, optimistic, pessimistic). Shows how your income's TRY value evolves, how your loan's real USD cost changes as the lira depreciates, and what happens to your budget if a partner income comes online in the future.
 
-The page uses these endpoints:
+### 🏠 Loan Optimization
+A dedicated mortgage workspace. Includes a scenario table comparing six down-payment and term combinations at your live inputs, a simulator where you can model any home price, rate, and term freely, and a **CollectAPI integration** that fetches current market loan offers from Turkish banks. Any offer you select is imported directly into your main budget with one click. The simulator also has an **"Apply to Budget →"** button that pushes the simulated loan back to the Budget tab.
 
-- `GET /credit/creditBid`
-- `GET /credit/konutKredi`
-- `GET /credit/tasitKredi`
+### 🛡 Risk Analysis
+Stress-tests your budget against the scenarios that matter most for a single-income USD household in Turkey: job loss, a sharp TRY strengthening, unexpected large expenses, and the effect of adding a partner income. Shows a risk profile card for each scenario and a quantified stress table.
 
-Expected usage:
+---
 
-- `creditBid` gives personalized results for `konut` or `tasit`
-- `konutKredi` and `tasitKredi` provide general market-rate lists
-- The UI sorts offers from best to worst and lets the user push a selected offer into the budget
+## Session & Data
 
-## Token Setup
+Your inputs are saved automatically to browser `localStorage` as you type. When you return to the page your last session is fully restored — no account, no server, no manual save needed.
 
-The HTML supports a project-level embedded token with:
+The **Oturum** button in the top navigation bar gives you three options:
 
-```js
-const COLLECT_API_TOKEN='...';
-```
+| Action | Effect |
+|--------|--------|
+| 💾 Kaydet | Downloads a `.json` snapshot of every field and setting |
+| 📂 Yükle | Opens a file picker to restore any previously saved snapshot |
+| 🖨 PDF | Builds a formatted print summary and opens the browser print dialog |
 
-Notes:
+Snapshots are plain JSON and fully re-importable. Use them to keep named scenarios — for example a conservative and an optimistic plan side by side.
 
-- The code normalizes the token, so raw token text and values starting with `apikey ` both work
-- Because this is a client-side HTML file, embedding the token makes it readable to anyone who can inspect the file
-- A backend proxy would be the safer long-term option
+---
 
-## Recommended User Flow
+## How It Was Built
 
-1. Open the live page — it starts on the Welcome (Başlangıç) tab.
-2. Go to `Bütçe` and enter real monthly income and FX rate.
-3. Enter house and car price, down payment, and financing assumptions.
-4. Tune recurring expense sliders until they reflect actual life.
-5. Open `Kredi Opt.` and fetch CollectAPI offers if you have a token.
-6. Apply the best matching house and/or car offer to the budget.
-7. Review `Raporlar` for the cross-section overview and chart views.
-8. Review `Kur Stratejisi`, `Gelecek`, and `Risk Analizi`.
-9. Click **💾 Kaydet** to save a snapshot, or **🖨 PDF** for a printable summary.
+finSim is intentionally a **single self-contained HTML file** with no build step, no framework, and no server dependency. The goal was something that could be hosted as a static GitHub Pages page, opened offline, and shared as a single file.
 
-## Files
+The project started as a basic income-vs-expense calculator and grew incrementally through a series of focused additions, each committed separately:
 
-- `index.html` — the entire application (self-contained, no build step)
-- `lang_en.js` — English translation strings
-- `finsim_favicon_minimal.svg`, `finsim_logo_dark.svg`, `finsim_logo_light.svg` — visual assets
+1. **Core model** — a shared `budgetSnapshot` object that every tab reads from. Changing any input calls `calc()`, which recomputes all totals and writes the result to `budgetSnapshot` so every downstream chart and table picks it up without explicit wiring.
 
-## Implementation Notes
+2. **State persistence** — `collectState()` and `applyState()` serialize the full form into `localStorage` on every keystroke. An export button serializes the same object to a `.json` file; import reads it back.
 
-- The page is intentionally self-contained for easy sharing and GitHub Pages hosting
-- Theme defaults to dark mode and can be toggled from the sticky top navigation
-- The welcome page (Başlangıç) is the default entry point
-- Session state is persisted to `localStorage` automatically; no backend is required
-- If a selected API offer no longer matches the current loan amount or term, the imported offer is cleared automatically
+3. **UI layer** — dark/light theme via CSS custom properties on `body[data-theme]`, a sticky navigation bar, mobile-friendly scrollable tabs, and a welcome overlay that explains the workflow before the user touches any input.
+
+4. **Charts** — Chart.js loaded from CDN. Each tab's charts are lazy-initialized the first time the tab is opened and destroyed/recreated on re-entry to prevent canvas conflicts. All chart data is derived from `budgetSnapshot` values, not hardcoded numbers.
+
+5. **Loan math** — standard amortization formula (`P = L·r·(1+r)^n / ((1+r)^n − 1)`) extended to support balloon payments. The mortgage optimizer generates scenario tables by applying the same formula across six down-payment and term combinations using live inputs.
+
+6. **CollectAPI integration** — client-side calls to the CollectAPI credit endpoints. Returned offers are sorted best-to-worst and each one has an import button that writes the rate and term back into the main budget card and re-runs the calculation.
+
+7. **Language support** — a `lang_en.js` file holds all English translations keyed by DOM order. Switching language replaces text content on all labeled elements without a page reload.
+
+8. **Iterative fixes** — several rounds of debugging: a `buildCats()` bug that reset expense fields when categories were toggled, smart-quote characters introduced by an editor that broke the entire script block, and welcome overlay dark-mode contrast issues resolved by inlining CSS custom property defaults directly on the overlay element.
+
+---
+
+## Tech
+
+- Vanilla HTML, CSS, JavaScript — no framework, no bundler
+- [Chart.js](https://www.chartjs.org/) via CDN for all charts
+- [CollectAPI](https://collectapi.com/) for live Turkish bank loan data (token required for that tab)
+- GitHub Pages for hosting
+- `localStorage` for session persistence
