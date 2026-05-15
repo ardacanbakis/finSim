@@ -9,7 +9,6 @@ window.BUDGET_LANG_EN = {
     "🛡 Risk Analysis"
   ],
   h3: [
-    "Quick Setup",
     "Income",
     "Home Loan",
     "Vehicle Financing",
@@ -41,8 +40,8 @@ window.BUDGET_LANG_EN = {
     "Simulator",
     "Live loan comparison - CollectAPI",
     "Risk profile - single-income USD household, Turkey 2026",
-    "Unlock effect of partner income",
-    "Stress test - worst cases"
+    "Stress test - worst cases",
+    "Quick Setup"
   ],
   hero: [
     "Plan housing, a car, and monthly life in Turkey in one connected view.",

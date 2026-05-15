@@ -1847,14 +1847,18 @@ function initProjCharts(){
 }
 
 function initMortCharts(){
-  const hp=5000000,r=0.03,usd=2500,fx=43.5,inc=usd*fx;
+  const hp=parseFloat(document.getElementById('hp').value)||5000000;
+  const r=parseFloat(document.getElementById('mr').value)/100||0.03;
+  const usd=budgetSnapshot.usd||2500;
+  const fx=budgetSnapshot.fx||43.5;
+  const inc=usd*fx;
   const scenarios=[
-    {dp:500000,term:240,lbl:'%10 peşinat · 20 yıl'},
-    {dp:1000000,term:240,lbl:'%20 peşinat · 20 yıl'},
-    {dp:1500000,term:180,lbl:'%30 peşinat · 15 yıl'},
-    {dp:1500000,term:120,lbl:'%30 peşinat · 10 yıl'},
-    {dp:2000000,term:120,lbl:'%40 peşinat · 10 yıl'},
-    {dp:2500000,term:84,lbl:'%50 peşinat · 7 yıl'},
+    {dp:Math.round(hp*0.10),term:240,lbl:'%10 peşinat · 20 yıl'},
+    {dp:Math.round(hp*0.20),term:240,lbl:'%20 peşinat · 20 yıl'},
+    {dp:Math.round(hp*0.30),term:180,lbl:'%30 peşinat · 15 yıl'},
+    {dp:Math.round(hp*0.30),term:120,lbl:'%30 peşinat · 10 yıl'},
+    {dp:Math.round(hp*0.40),term:120,lbl:'%40 peşinat · 10 yıl'},
+    {dp:Math.round(hp*0.50),term:84,lbl:'%50 peşinat · 7 yıl'},
   ];
   const rows=scenarios.map(s=>{const loan=hp-s.dp,m=loan*r*Math.pow(1+r,s.term)/(Math.pow(1+r,s.term)-1),total=m*s.term,rat=inc>0?m/inc*100:0;return{...s,loan,m,total,rat,usdM:m/fx};});
   const tbl=document.getElementById('opt-table');
@@ -1878,10 +1882,23 @@ function simCalc(){
   const total=m*n,rat=inc>0?m/inc*100:0;
   const maxLoan=inc>0?inc*0.4/(r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1)):0;
   const b=rat<=40?'ok':rat<=55?'warn':'bad';
-  document.getElementById('sim-res').innerHTML=`<div class="cards3" style="margin-bottom:10px;"><div class="mcard"><div class="mlbl">Aylık taksit</div><div class="mval">${f(m)}</div><div class="msub">${fd(m/fx)}/ay</div></div><div class="mcard"><div class="mlbl">Toplam ödeme</div><div class="mval">${f(total)}</div><div class="msub">Faiz: ${f(total-loan)}</div></div><div class="mcard"><div class="mlbl">Gelir oranı</div><div class="mval"><span class="badge ${b}" style="font-size:15px;padding:4px 10px;">${fp(rat)}</span></div></div></div><div class="tip"><b>Önerilen maks. kredi:</b> ${f(maxLoan)} · Seçtiğiniz: ${f(loan)} ${loan<=maxLoan?'✓ güvenli':'⚠ limitin üzerinde'}<br><b>Kötümser senaryoda 5 yıl sonra taksit USD maliyeti:</b> ${fd(m/(43.5*Math.pow(1.35,5)))}/ay</div>`;
+  document.getElementById('sim-res').innerHTML=`<div class="cards3" style="margin-bottom:10px;"><div class="mcard"><div class="mlbl">Aylık taksit</div><div class="mval">${f(m)}</div><div class="msub">${fd(m/fx)}/ay</div></div><div class="mcard"><div class="mlbl">Toplam ödeme</div><div class="mval">${f(total)}</div><div class="msub">Faiz: ${f(total-loan)}</div></div><div class="mcard"><div class="mlbl">Gelir oranı</div><div class="mval"><span class="badge ${b}" style="font-size:15px;padding:4px 10px;">${fp(rat)}</span></div></div></div><div class="tip"><b>Önerilen maks. kredi:</b> ${f(maxLoan)} · Seçtiğiniz: ${f(loan)} ${loan<=maxLoan?'✓ güvenli':'⚠ limitin üzerinde'}<br><b>Kötümser senaryoda 5 yıl sonra taksit USD maliyeti:</b> ${fd(m/(43.5*Math.pow(1.35,5)))}/ay</div><div style="margin-top:10px;text-align:right;"><button class="btn-primary" onclick="applySimToBudget()">Bütçeye Uygula →</button></div>`;
   document.getElementById('api-house-amount').value=Math.round(loan);
   document.getElementById('api-house-term').value=n;
   syncApiHouseInputs();
+}
+
+function applySimToBudget(){
+  const hp=document.getElementById('sim-hp').value;
+  const dp=document.getElementById('sim-dp').value;
+  const r=document.getElementById('sim-r').value;
+  const n=document.getElementById('sim-t').value;
+  if(document.getElementById('hp'))document.getElementById('hp').value=hp;
+  if(document.getElementById('dp'))document.getElementById('dp').value=dp;
+  handleRangeInput('mr',r,null,2,'%');
+  handleRangeInput('mt',n,null,0,' ay',v=>v+' ay');
+  calcMort();
+  showTab('budget');
 }
 
 function initRisk(){
