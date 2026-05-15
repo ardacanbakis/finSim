@@ -1765,6 +1765,26 @@ function curCalc(){
   updateCurrencyCharts();
 }
 
+function syncCurrencyTabInputs(){
+  const snap=budgetSnapshot;
+  if(snap.grandExp>0){
+    const el=document.getElementById('cur-exp');
+    if(el)el.value=Math.round(snap.grandExp);
+  }
+  if(snap.usd>0){
+    const el=document.getElementById('cur-usd');
+    if(el)el.value=snap.usd;
+  }
+  if(snap.fx>0){
+    const fxEl=document.getElementById('cur-fx');
+    const fxN=document.getElementById('cur-fxN');
+    const fxV=document.getElementById('cur-fxV');
+    if(fxEl)fxEl.value=snap.fx;
+    if(fxN)fxN.value=snap.fx;
+    if(fxV)fxV.textContent=snap.fx.toFixed(2);
+  }
+}
+
 let _curChart=null,_impactChart=null;
 function initCurrencyCharts(){
   const fxVals=[35,40,43.5,50,55,60,65,70];
@@ -1809,19 +1829,21 @@ function initInflCharts(){
 
 function initProjCharts(){
   const yrs=['2026','2027','2028','2029','2030','2031'];
-  const b=43.5;
+  const b=budgetSnapshot.fx||43.5;
+  const usd=budgetSnapshot.usd||2500;
+  const baseExp=budgetSnapshot.grandExp||75000;
   const pess=yrs.map((_,i)=>+(b*Math.pow(1.35,i)).toFixed(1));
   const mid=yrs.map((_,i)=>+(b*Math.pow(1.20,i)).toFixed(1));
   const opt=yrs.map((_,i)=>+(b*Math.pow(1.12,i)).toFixed(1));
 
   new Chart(document.getElementById('fxProj'),{type:'line',data:{labels:yrs,datasets:[{label:'Kötümser',data:pess,borderColor:'#E24B4A',backgroundColor:'rgba(226,75,74,0.08)',tension:0.3,pointRadius:4,fill:true,borderWidth:2.5},{label:'Baz',data:mid,borderColor:'#378ADD',backgroundColor:'transparent',tension:0.3,pointRadius:4,borderDash:[5,3]},{label:'İyimser',data:opt,borderColor:'#639922',backgroundColor:'transparent',tension:0.3,pointRadius:4,borderDash:[3,3]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'₺'+v}}}}});
-  new Chart(document.getElementById('incProj'),{type:'line',data:{labels:yrs,datasets:[{label:'Kötümser',data:pess.map(r=>Math.round(2500*r)),borderColor:'#E24B4A',backgroundColor:'rgba(226,75,74,0.08)',tension:0.3,fill:true,pointRadius:4,borderWidth:2.5},{label:'Baz',data:mid.map(r=>Math.round(2500*r)),borderColor:'#378ADD',backgroundColor:'transparent',tension:0.3,pointRadius:4,borderDash:[5,3]},{label:'İyimser',data:opt.map(r=>Math.round(2500*r)),borderColor:'#639922',backgroundColor:'transparent',tension:0.3,pointRadius:4,borderDash:[3,3]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'₺'+Math.round(v/1000)+'K'}}}}});
+  new Chart(document.getElementById('incProj'),{type:'line',data:{labels:yrs,datasets:[{label:'Kötümser',data:pess.map(r=>Math.round(usd*r)),borderColor:'#E24B4A',backgroundColor:'rgba(226,75,74,0.08)',tension:0.3,fill:true,pointRadius:4,borderWidth:2.5},{label:'Baz',data:mid.map(r=>Math.round(usd*r)),borderColor:'#378ADD',backgroundColor:'transparent',tension:0.3,pointRadius:4,borderDash:[5,3]},{label:'İyimser',data:opt.map(r=>Math.round(usd*r)),borderColor:'#639922',backgroundColor:'transparent',tension:0.3,pointRadius:4,borderDash:[3,3]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'₺'+Math.round(v/1000)+'K'}}}}});
 
   const mp=mortPay||50000;
   new Chart(document.getElementById('mortProj'),{type:'line',data:{labels:yrs,datasets:[{label:'Kötümser',data:pess.map(r=>Math.round(mp/r)),borderColor:'#E24B4A',backgroundColor:'rgba(226,75,74,0.08)',tension:0.3,fill:true,pointRadius:4,borderWidth:2.5},{label:'Baz',data:mid.map(r=>Math.round(mp/r)),borderColor:'#378ADD',backgroundColor:'transparent',tension:0.3,pointRadius:4,borderDash:[5,3]},{label:'İyimser',data:opt.map(r=>Math.round(mp/r)),borderColor:'#639922',backgroundColor:'transparent',tension:0.3,pointRadius:4,borderDash:[3,3]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'$'+v}}}}});
 
-  const baseInc=2500*43.5;const partnerFut=[0,0,1000*43.5,1000*43.5,1500*43.5,1500*43.5];
-  new Chart(document.getElementById('partnerProj'),{type:'bar',data:{labels:yrs,datasets:[{label:'Mevcut gelir (TRY)',data:pess.map(r=>Math.round(2500*r)),backgroundColor:'rgba(55,138,221,0.6)',stack:'a'},{label:'Eş geliri (TRY)',data:pess.map((r,i)=>Math.round(partnerFut[i]||0)),backgroundColor:'rgba(99,153,34,0.7)',stack:'a'},{type:'line',label:'Toplam gider projeksiyonu',data:yrs.map((_,i)=>Math.round(75000*Math.pow(1.27,i))),borderColor:'#E24B4A',backgroundColor:'transparent',tension:0.3,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'₺'+Math.round(v/1000)+'K'}}}}});
+  const partnerFut=[0,0,1000*b,1000*b,1500*b,1500*b];
+  new Chart(document.getElementById('partnerProj'),{type:'bar',data:{labels:yrs,datasets:[{label:'Mevcut gelir (TRY)',data:pess.map(r=>Math.round(usd*r)),backgroundColor:'rgba(55,138,221,0.6)',stack:'a'},{label:'Eş geliri (TRY)',data:pess.map((_,i)=>Math.round(partnerFut[i]||0)),backgroundColor:'rgba(99,153,34,0.7)',stack:'a'},{type:'line',label:'Toplam gider projeksiyonu',data:yrs.map((_,i)=>Math.round(baseExp*Math.pow(1.27,i))),borderColor:'#E24B4A',backgroundColor:'transparent',tension:0.3,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'₺'+Math.round(v/1000)+'K'}}}}});
 }
 
 function initMortCharts(){
@@ -1896,7 +1918,11 @@ function riskCalc(){
   const m=parseInt(document.getElementById('risk-months').value)||12;
   const fx=budgetSnapshot.fx||43.5;
   const addTRY=p*fx;
-  document.getElementById('unlock-result').innerHTML=`<div class="cards3" style="margin-bottom:0;"><div class="mcard"><div class="mlbl">Ek aylık gelir</div><div class="mval g">${f(addTRY)}</div><div class="msub">${fd(p)}/ay</div></div><div class="mcard"><div class="mlbl">${m} ay içinde toplam ek</div><div class="mval g">${f(addTRY*m)}</div><div class="msub">Acil fon veya peşinat</div></div><div class="mcard"><div class="mlbl">Alınabilecek maks. ek kredi</div><div class="mval g">${f(addTRY*0.4/0.03*Math.pow(1.03,120)/(Math.pow(1.03,120)-1))}</div><div class="msub">Gelir oranı %40 kuralı</div></div></div>`;
+  const mr=parseFloat(document.getElementById('mr').value)/100||0.03;
+  const mt=parseInt(document.getElementById('mt').value)||120;
+  const factor=Math.pow(1+mr,mt);
+  const maxLoan=addTRY*0.4/mr*factor/(factor-1);
+  document.getElementById('unlock-result').innerHTML=`<div class="cards3" style="margin-bottom:0;"><div class="mcard"><div class="mlbl">Ek aylık gelir</div><div class="mval g">${f(addTRY)}</div><div class="msub">${fd(p)}/ay</div></div><div class="mcard"><div class="mlbl">${m} ay içinde toplam ek</div><div class="mval g">${f(addTRY*m)}</div><div class="msub">Acil fon veya peşinat</div></div><div class="mcard"><div class="mlbl">Alınabilecek maks. ek kredi</div><div class="mval g">${f(maxLoan)}</div><div class="msub">%${Math.round(mr*100*10)/10} · ${mt} ay · %40 kural</div></div></div>`;
 }
 
 function showTab(t){
@@ -1904,7 +1930,7 @@ function showTab(t){
   document.querySelectorAll('.pane').forEach(el=>el.classList.remove('active'));
   document.getElementById('pane-'+t).classList.add('active');
   if(t==='reports'){updateReports();}
-  if(t==='currency'&&!window._curInit){initCurrencyCharts();curCalc();window._curInit=true;}
+  if(t==='currency'&&!window._curInit){syncCurrencyTabInputs();initCurrencyCharts();curCalc();window._curInit=true;}
   if(t==='inflation'&&!window._inflInit){initInflCharts();window._inflInit=true;}
   if(t==='projection'&&!window._projInit){initProjCharts();window._projInit=true;}
   if(t==='mortgage'&&!window._mortInit){initMortCharts();simCalc();window._mortInit=true;}
